@@ -20,8 +20,8 @@ const UnitForm = () => {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
 
+  const [buildingName, setBuildingName] = useState("")
   const [unitNumber, setUnitNumber] = useState("")
-  const [building, setBuilding] = useState("")
   const [floor, setFloor] = useState("1")
   const [bedrooms, setBedrooms] = useState("1")
   const [bathrooms, setBathrooms] = useState("1")
@@ -29,11 +29,17 @@ const UnitForm = () => {
   const [status, setStatus] = useState("vacant")
 
   useEffect(() => {
+    api.buildings.mine()
+      .then((b) => setBuildingName(b.name))
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
     if (!id) return
     api.units.get(id)
       .then((data) => {
         setUnitNumber(String(data.unit_number || ""))
-        setBuilding(String(data.building || ""))
+        if (data.building) setBuildingName(String(data.building))
         setFloor(String(data.floor ?? 1))
         setBedrooms(String(data.bedrooms ?? 1))
         setBathrooms(String(data.bathrooms ?? 1))
@@ -50,7 +56,6 @@ const UnitForm = () => {
     setSubmitting(true)
     const payload = {
       unit_number: unitNumber.trim(),
-      building: building.trim(),
       floor: Number(floor),
       bedrooms: Number(bedrooms),
       bathrooms: Number(bathrooms),
@@ -110,15 +115,16 @@ const UnitForm = () => {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="unitNumber">Unit Number</Label>
-                  <Input id="unitNumber" required value={unitNumber} onChange={(e) => setUnitNumber(e.target.value)} disabled={submitting} />
+              {buildingName && (
+                <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 text-sm">
+                  <span className="text-slate-500">Building: </span>
+                  <span className="font-semibold">{buildingName}</span>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="building">Building</Label>
-                  <Input id="building" required value={building} onChange={(e) => setBuilding(e.target.value)} disabled={submitting} />
-                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="unitNumber">Unit Number</Label>
+                <Input id="unitNumber" required value={unitNumber} onChange={(e) => setUnitNumber(e.target.value)} disabled={submitting} />
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

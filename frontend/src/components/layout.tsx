@@ -26,7 +26,7 @@ const Layout = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null)
+  const [user, setUser] = useState<{ name: string; email: string; role: string; building_name?: string | null } | null>(null)
   const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme)
 
   useEffect(() => {
@@ -36,6 +36,10 @@ const Layout = () => {
       return
     }
     api.auth.me().then((profile) => {
+      if (profile.role === "super_admin") {
+        navigate("/super-admin", { replace: true })
+        return
+      }
       setUser(profile)
       const adminPaths = ["/dashboard", "/members", "/staff", "/billing", "/audit-log"]
       const isAdminRoute = adminPaths.some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`))
@@ -82,7 +86,9 @@ const Layout = () => {
             <div className="w-8 h-8 bg-primary rounded flex items-center justify-center shrink-0">
               <Building2 className="text-white h-5 w-5" />
             </div>
-            <span className="font-bold text-xl tracking-tight lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap">BSMS Admin</span>
+            <span className="font-bold text-xl tracking-tight lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {user?.building_name || "BSMS Admin"}
+            </span>
           </div>
           <button className="lg:hidden" onClick={() => setSidebarOpen(false)}>
             <X className="h-5 w-5" />

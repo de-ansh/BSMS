@@ -9,18 +9,22 @@ from app.routers import (
     auth,
     audit_log,
     billing,
+    buildings,
     dashboard,
     members,
     notices,
     staff,
+    super_admin,
     units,
 )
+from app.services.schema_migrate import migrate_schema
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     settings.validate_for_startup()
     Base.metadata.create_all(bind=engine)
+    migrate_schema(engine)
     yield
 
 
@@ -39,6 +43,8 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(super_admin.router)
+app.include_router(buildings.router)
 app.include_router(dashboard.router)
 app.include_router(members.router)
 app.include_router(units.router)

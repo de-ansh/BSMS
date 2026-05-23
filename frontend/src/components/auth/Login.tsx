@@ -21,9 +21,13 @@ const LoginPage = () => {
   const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme)
 
   useEffect(() => {
-    if (localStorage.getItem("bsms_token")) {
-      navigate("/dashboard", { replace: true })
-    }
+    const token = localStorage.getItem("bsms_token")
+    if (!token) return
+    api.auth.me().then((profile) => {
+      if (profile.role === "super_admin") navigate("/super-admin", { replace: true })
+      else if (profile.role === "admin") navigate("/dashboard", { replace: true })
+      else navigate("/notices", { replace: true })
+    }).catch(() => localStorage.removeItem("bsms_token"))
   }, [navigate])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +37,9 @@ const LoginPage = () => {
     try {
       const res = await api.auth.login(email, password, role)
       localStorage.setItem("bsms_token", res.access_token)
-      navigate("/dashboard")
+      if (role === "super_admin") navigate("/super-admin")
+      else if (role === "admin") navigate("/dashboard")
+      else navigate("/notices")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed")
     } finally {
@@ -104,9 +110,10 @@ const LoginPage = () => {
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Select Role</Label>
               <Tabs value={role} onValueChange={setRole} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-slate-100 dark:bg-slate-800">
+                <TabsList className="grid w-full grid-cols-3 bg-slate-100 dark:bg-slate-800">
                   <TabsTrigger value="resident">Resident</TabsTrigger>
-                  <TabsTrigger value="admin">Admin</TabsTrigger>
+                  <TabsTrigger value="admin">Society Admin</TabsTrigger>
+                  <TabsTrigger value="super_admin">Platform</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>

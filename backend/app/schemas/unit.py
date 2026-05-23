@@ -6,7 +6,8 @@ from pydantic import BaseModel
 
 class UnitCreate(BaseModel):
     unit_number: str
-    building: str
+    building: Optional[str] = None
+    building_id: Optional[str] = None
     floor: int
     bedrooms: int = 1
     bathrooms: int = 1
@@ -18,6 +19,7 @@ class UnitCreate(BaseModel):
 class UnitUpdate(BaseModel):
     unit_number: Optional[str] = None
     building: Optional[str] = None
+    building_id: Optional[str] = None
     floor: Optional[int] = None
     bedrooms: Optional[int] = None
     bathrooms: Optional[int] = None
@@ -29,6 +31,7 @@ class UnitUpdate(BaseModel):
 class UnitResponse(BaseModel):
     id: str
     unit_number: str
+    building_id: Optional[str] = None
     building: str
     floor: int
     bedrooms: int

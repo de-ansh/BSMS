@@ -15,6 +15,9 @@ class Unit(Base):
         String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
     unit_number: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    building_id: Mapped[str | None] = mapped_column(
+        String(36), nullable=True, index=True
+    )
     building: Mapped[str] = mapped_column(String(255), nullable=False)
     floor: Mapped[int] = mapped_column(nullable=False)
     bedrooms: Mapped[int] = mapped_column(default=1)

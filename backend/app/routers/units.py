@@ -12,6 +12,7 @@ from app.dependencies import (
     require_admin,
 )
 from app.schemas.unit import UnitCreate, UnitResponse, UnitUpdate
+from app.services.building_scope import require_admin_building
 
 router = APIRouter(prefix="/units", tags=["units"])
 
@@ -25,6 +26,7 @@ def _build_unit_response(db: Session, unit: Unit) -> UnitResponse:
     return UnitResponse(
         id=str(unit.id),
         unit_number=unit.unit_number,
+        building_id=str(unit.building_id) if unit.building_id else None,
         building=unit.building,
         floor=unit.floor,
         bedrooms=unit.bedrooms,
@@ -37,13 +39,20 @@ def _build_unit_response(db: Session, unit: Unit) -> UnitResponse:
     )
 
 
+def _units_query(db: Session, user: User):
+    query = db.query(Unit)
+    if user.role == "admin" and user.building_id:
+        query = query.filter(Unit.building_id == user.building_id)
+    return query.order_by(Unit.building, Unit.unit_number)
+
+
 @router.get("/", response_model=list[UnitResponse])
 def list_units(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     if current_user.role == "admin":
-        units = db.query(Unit).order_by(Unit.building, Unit.unit_number).all()
+        units = _units_query(db, current_user).all()
         return [_build_unit_response(db, unit) for unit in units]
 
     member = get_resident_member(db, current_user)
@@ -71,11 +80,19 @@ def get_unit(
 def create_unit(
     body: UnitCreate,
     db: Session = Depends(get_db),
-    _current_user: User = Depends(require_admin),
+    current_user: User = Depends(require_admin),
 ):
+    building = require_admin_building(current_user, db)
+    building_id = building.id
+    building_name = building.name
+
+    if body.building_id and body.building_id != building_id:
+        raise HTTPException(status_code=403, detail="Cannot create units for another building")
+
     unit = Unit(
         unit_number=body.unit_number,
-        building=body.building,
+        building_id=building_id,
+        building=building_name,
         floor=body.floor,
         bedrooms=body.bedrooms,
         bathrooms=body.bathrooms,
@@ -94,13 +111,21 @@ def update_unit(
     unit_id: str,
     body: UnitUpdate,
     db: Session = Depends(get_db),
-    _current_user: User = Depends(require_admin),
+    current_user: User = Depends(require_admin),
 ):
     unit = db.query(Unit).filter(Unit.id == unit_id).first()
     if not unit:
         raise HTTPException(status_code=404, detail="Unit not found")
 
+    if current_user.building_id and unit.building_id != current_user.building_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
     update_data = body.model_dump(exclude_unset=True)
+    if "building_id" in update_data:
+        update_data.pop("building_id")
+    if "building" in update_data:
+        update_data.pop("building")
+
     for key, value in update_data.items():
         setattr(unit, key, value)
 

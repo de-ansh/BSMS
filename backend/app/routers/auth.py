@@ -17,6 +17,8 @@ from app.services.rate_limit import (
 )
 from app.models.user import User
 from app.dependencies import get_current_user
+from app.services.building_scope import assert_building_active, get_building_or_404
+from app.services.user_response import build_user_response
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -31,7 +33,7 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
     )
 
     user = authenticate_user(db, body.email, body.password)
-    if not user or user.role != body.role:
+    if not user or not user.is_active or user.role != body.role:
         record_failed_login(rate_key)
         log_audit(
             db,
@@ -44,6 +46,15 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
         )
+
+    if user.role == "admin":
+        if not user.building_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Society admin is not assigned to a building",
+            )
+        building = get_building_or_404(db, user.building_id)
+        assert_building_active(building)
 
     clear_login_attempts(rate_key)
     token = create_access_token(str(user.id), user.role)
@@ -60,24 +71,34 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
 
 
 @router.get("/me", response_model=UserResponse)
-def get_me(current_user: User = Depends(get_current_user)):
-    return current_user
+def get_me(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return build_user_response(db, current_user)
 
 
 @router.post("/seed", status_code=201)
-def seed_admin(db: Session = Depends(get_db)):
+def seed_super_admin(db: Session = Depends(get_db)):
     if not settings.allow_seed:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
 
-    existing = db.query(User).filter(User.email == "admin@society.com").first()
+    existing = db.query(User).filter(User.email == "superadmin@bsms.com").first()
     if existing:
-        return {"message": "Admin already exists"}
+        return {"message": "Super admin already exists", "email": "superadmin@bsms.com"}
+
     user = User(
-        email="admin@society.com",
-        password_hash=hash_password("admin123"),
-        name="Admin User",
-        role="admin",
+        email="superadmin@bsms.com",
+        password_hash=hash_password("superadmin123"),
+        name="Platform Super Admin",
+        role="super_admin",
+        building_id=None,
     )
     db.add(user)
     db.commit()
-    return {"message": "Admin created", "email": "admin@society.com"}
+    return {
+        "message": "Super admin created",
+        "email": "superadmin@bsms.com",
+        "password": "superadmin123",
+        "portal": "/super-admin",
+    }

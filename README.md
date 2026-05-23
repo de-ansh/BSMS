@@ -17,7 +17,7 @@ uv run uvicorn app.main:app --reload     # Dev server on http://localhost:8000
 uv run uvicorn app.main:app              # Production
 ```
 
-### Seed admin user
+### Seed super admin (platform)
 
 Set `ALLOW_SEED=true` in `backend/.env` (enabled by default in development), then:
 
@@ -25,7 +25,15 @@ Set `ALLOW_SEED=true` in `backend/.env` (enabled by default in development), the
 curl -X POST http://localhost:8000/auth/seed
 ```
 
-> Admin credentials: `admin@society.com` / `admin123`
+> Super admin: `superadmin@bsms.com` / `superadmin123` → open http://localhost:5173 and sign in as **Platform**
+
+From the super admin portal you can:
+
+- Create buildings (societies)
+- Create society admin accounts per building
+- Enable or disable buildings (disabled buildings block society admin login)
+
+Society admins sign in as **Society Admin**, manage units/members/billing for their building only.
 
 ### Security
 

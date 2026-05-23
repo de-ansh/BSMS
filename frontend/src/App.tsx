@@ -15,12 +15,21 @@ import InvoiceDetail from "@/components/billing/InvoiceDetail"
 import InvoiceForm from "@/components/billing/InvoiceForm"
 import NoticesCommunication from "@/components/communication/NoticesCommunication"
 import AuditLog from "@/components/system/AuditLog"
+import SuperAdminLayout from "@/components/super-admin/SuperAdminLayout"
+import BuildingsOverview from "@/components/super-admin/BuildingsOverview"
+import BuildingForm from "@/components/super-admin/BuildingForm"
+import BuildingDetail from "@/components/super-admin/BuildingDetail"
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/super-admin" element={<SuperAdminLayout />}>
+          <Route index element={<BuildingsOverview />} />
+          <Route path="buildings/new" element={<BuildingForm />} />
+          <Route path="buildings/:id" element={<BuildingDetail />} />
+        </Route>
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />

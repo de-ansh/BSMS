@@ -36,7 +36,19 @@ def list_invoices(
     current_user: User = Depends(get_current_user),
 ):
     query = db.query(Invoice)
-    if current_user.role != "admin":
+    if current_user.role == "admin":
+        if current_user.building_id:
+            unit_ids = [
+                row[0]
+                for row in db.query(Unit.id)
+                .filter(Unit.building_id == current_user.building_id)
+                .all()
+            ]
+            if unit_ids:
+                query = query.filter(Invoice.unit_id.in_(unit_ids))
+            else:
+                return []
+    else:
         member = get_resident_member(db, current_user)
         if member is None:
             return []

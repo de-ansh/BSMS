@@ -60,7 +60,21 @@ def list_members(
     current_user: User = Depends(get_current_user),
 ):
     if current_user.role == "admin":
-        return db.query(Member).order_by(Member.name).all()
+        query = db.query(Member)
+        if current_user.building_id:
+            unit_ids = [
+                row[0]
+                for row in db.query(Unit.id)
+                .filter(Unit.building_id == current_user.building_id)
+                .all()
+            ]
+            if unit_ids:
+                query = query.filter(
+                    (Member.unit_id.in_(unit_ids)) | (Member.unit_id.is_(None))
+                )
+            else:
+                query = query.filter(Member.unit_id.is_(None))
+        return query.order_by(Member.name).all()
 
     member = get_resident_member(db, current_user)
     if member is None:
@@ -85,8 +99,13 @@ def get_member(
 def create_member(
     body: MemberCreate,
     db: Session = Depends(get_db),
-    _current_user: User = Depends(require_admin),
+    current_user: User = Depends(require_admin),
 ):
+    if body.unit_id and current_user.building_id:
+        unit = db.query(Unit).filter(Unit.id == body.unit_id).first()
+        if not unit or unit.building_id != current_user.building_id:
+            raise HTTPException(status_code=400, detail="Unit does not belong to your building")
+
     member = Member(
         name=body.name,
         email=body.email,

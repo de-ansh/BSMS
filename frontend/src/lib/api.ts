@@ -50,7 +50,91 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ email, password, role }),
       }),
-    me: () => request<{ id: string; email: string; name: string; role: string }>("/auth/me"),
+    me: () =>
+      request<{
+        id: string
+        email: string
+        name: string
+        role: string
+        building_id: string | null
+        building_name: string | null
+        is_active: boolean
+      }>("/auth/me"),
+  },
+
+  buildings: {
+    mine: () =>
+      request<{
+        id: string
+        name: string
+        code: string
+        address: string | null
+        city: string | null
+        is_active: boolean
+      }>("/buildings/mine"),
+  },
+
+  superAdmin: {
+    buildings: {
+      list: () =>
+        request<Array<{
+          id: string
+          name: string
+          code: string
+          address: string | null
+          city: string | null
+          state: string | null
+          postal_code: string | null
+          is_active: boolean
+          created_at: string
+          admin_count: number
+          unit_count: number
+        }>>("/super-admin/buildings"),
+      get: (id: string) =>
+        request<{
+          id: string
+          name: string
+          code: string
+          address: string | null
+          city: string | null
+          state: string | null
+          postal_code: string | null
+          is_active: boolean
+          created_at: string
+          admin_count: number
+          unit_count: number
+        }>(`/super-admin/buildings/${id}`),
+      create: (data: Record<string, unknown>) =>
+        request<{ id: string }>("/super-admin/buildings", {
+          method: "POST",
+          body: JSON.stringify(data),
+        }),
+      update: (id: string, data: Record<string, unknown>) =>
+        request<{ id: string }>(`/super-admin/buildings/${id}`, {
+          method: "PATCH",
+          body: JSON.stringify(data),
+        }),
+      admins: (buildingId: string) =>
+        request<Array<{
+          id: string
+          name: string
+          email: string
+          role: string
+          building_id: string | null
+          is_active: boolean
+          created_at: string
+        }>>(`/super-admin/buildings/${buildingId}/admins`),
+      createAdmin: (buildingId: string, data: Record<string, unknown>) =>
+        request<{ id: string }>(`/super-admin/buildings/${buildingId}/admins`, {
+          method: "POST",
+          body: JSON.stringify(data),
+        }),
+    },
+    setAdminStatus: (userId: string, is_active: boolean) =>
+      request<{ id: string }>(`/super-admin/admins/${userId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ is_active }),
+      }),
   },
 
   dashboard: {

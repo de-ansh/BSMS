@@ -13,20 +13,37 @@ from app.schemas.dashboard import DashboardStats
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 
+def _unit_ids_for_admin(db: Session, building_id: str) -> list[str]:
+    rows = db.query(Unit.id).filter(Unit.building_id == building_id).all()
+    return [str(row[0]) for row in rows]
+
+
 @router.get("/stats", response_model=DashboardStats)
 def get_stats(
     db: Session = Depends(get_db),
-    _current_user: User = Depends(require_admin),
+    current_user: User = Depends(require_admin),
 ):
-    total_units = db.query(Unit).count()
-    occupied_units = db.query(Unit).filter(Unit.status == "occupied").count()
-    total_members = db.query(Member).count()
+    units_query = db.query(Unit)
+    members_query = db.query(Member)
+    invoices_query = db.query(Invoice)
+
+    if current_user.building_id:
+        unit_ids = _unit_ids_for_admin(db, current_user.building_id)
+        units_query = units_query.filter(Unit.building_id == current_user.building_id)
+        if unit_ids:
+            members_query = members_query.filter(Member.unit_id.in_(unit_ids))
+            invoices_query = invoices_query.filter(Invoice.unit_id.in_(unit_ids))
+        else:
+            members_query = members_query.filter(Member.id.is_(None))
+            invoices_query = invoices_query.filter(Invoice.id.is_(None))
+
+    total_units = units_query.count()
+    occupied_units = units_query.filter(Unit.status == "occupied").count()
+    total_members = members_query.count()
     total_staff = db.query(Staff).count()
 
     pending_invoices = (
-        db.query(Invoice)
-        .filter(Invoice.status.in_(["pending", "overdue"]))
-        .all()
+        invoices_query.filter(Invoice.status.in_(["pending", "overdue"])).all()
     )
     pending_amount = sum(inv.amount for inv in pending_invoices)
     overdue_count = len(
