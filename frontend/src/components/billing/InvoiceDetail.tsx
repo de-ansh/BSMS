@@ -1,14 +1,21 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import {
-  ArrowLeft, Printer, CreditCard, CalendarDays, Building2, User as UserIcon
+  ArrowLeft, Printer, CreditCard, CalendarDays, Building2, User as UserIcon, Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select"
 import { api } from "@/lib/api"
+
+const RESERVED_IDS = new Set(["new", "export", "edit"])
 
 const formatCurrency = (amount: string | number) => {
   return `$${Number(amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -34,16 +41,50 @@ const InvoiceDetail = () => {
   const [invoice, setInvoice] = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [paymentAmount, setPaymentAmount] = useState("")
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().slice(0, 10))
+  const [paymentMethod, setPaymentMethod] = useState("cash")
+  const [recording, setRecording] = useState(false)
+  const [paymentError, setPaymentError] = useState("")
 
-  useEffect(() => {
-    if (!id) return
+  const loadInvoice = () => {
+    if (!id || RESERVED_IDS.has(id)) return
     setLoading(true)
     setError("")
     api.billing.getInvoice(id)
       .then(setInvoice)
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load invoice"))
       .finally(() => setLoading(false))
-  }, [id])
+  }
+
+  useEffect(() => {
+    if (!id || RESERVED_IDS.has(id)) {
+      if (id && RESERVED_IDS.has(id)) navigate("/billing", { replace: true })
+      return
+    }
+    loadInvoice()
+  }, [id, navigate])
+
+  const handleRecordPayment = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!id) return
+    setPaymentError("")
+    setRecording(true)
+    try {
+      await api.billing.createPayment({
+        invoice_id: id,
+        amount: Number(paymentAmount),
+        payment_date: paymentDate,
+        payment_method: paymentMethod,
+      })
+      setPaymentAmount("")
+      loadInvoice()
+    } catch (err) {
+      setPaymentError(err instanceof Error ? err.message : "Failed to record payment")
+    } finally {
+      setRecording(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -83,6 +124,9 @@ const InvoiceDetail = () => {
   const charges = (invoice.charges as Array<Record<string, unknown>>) || []
   const payments = (invoice.payment_history as Array<Record<string, unknown>>) || (invoice.payments as Array<Record<string, unknown>>) || []
   const memberId = (invoice.member_id as string) || ""
+  const paidTotal = payments.reduce((sum, p) => sum + Number(p.amount || 0), 0)
+  const remaining = Math.max(Number(amount) - paidTotal, 0)
+  const canRecordPayment = status !== "paid" && remaining > 0
 
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-5xl mx-auto w-full h-full overflow-y-auto">
@@ -224,6 +268,46 @@ const InvoiceDetail = () => {
               </div>
             </CardContent>
           </Card>
+
+          {canRecordPayment && (
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold">Record Payment</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleRecordPayment} className="space-y-4">
+                  {paymentError && (
+                    <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">{paymentError}</div>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="payAmount">Amount ($)</Label>
+                      <Input id="payAmount" type="number" min="0.01" step="0.01" max={remaining} required value={paymentAmount} onChange={(e) => setPaymentAmount(e.target.value)} disabled={recording} placeholder={remaining.toFixed(2)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="payDate">Date</Label>
+                      <Input id="payDate" type="date" required value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} disabled={recording} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Method</Label>
+                      <Select value={paymentMethod} onValueChange={setPaymentMethod} disabled={recording}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cash">Cash</SelectItem>
+                          <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                          <SelectItem value="card">Card</SelectItem>
+                          <SelectItem value="cheque">Cheque</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <Button type="submit" className="gap-2" disabled={recording}>
+                    {recording ? <><Loader2 className="h-4 w-4 animate-spin" /> Recording...</> : <><CreditCard className="h-4 w-4" /> Record Payment</>}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

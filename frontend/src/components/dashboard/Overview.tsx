@@ -136,7 +136,7 @@ const Dashboard = () => {
       <div className="space-y-4">
         <h2 className="text-lg font-bold">Quick Actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
-          <ActionButton icon={<PlusSquare />} label="Add Member" primary onClick={() => navigate("/members")} />
+          <ActionButton icon={<PlusSquare />} label="Add Member" primary onClick={() => navigate("/members/new")} />
           <ActionButton icon={<CreditCard />} label="Generate Bills" onClick={() => navigate("/billing")} />
           <ActionButton icon={<Users />} label="Manage Staff" onClick={() => navigate("/staff")} />
           <ActionButton icon={<LogOut />} label="View Reports" onClick={() => navigate("/audit-log")} />

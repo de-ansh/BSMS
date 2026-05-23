@@ -22,7 +22,14 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
   if (!res.ok) {
     const error = await res.json().catch(() => ({ detail: res.statusText }))
-    throw new Error(error.detail || `Request failed: ${res.status}`)
+    const detail = error.detail
+    const message =
+      typeof detail === "string"
+        ? detail
+        : Array.isArray(detail)
+          ? detail.map((item: { msg?: string }) => item.msg || "").filter(Boolean).join(", ")
+          : `Request failed: ${res.status}`
+    throw new Error(message || `Request failed: ${res.status}`)
   }
   if (res.status === 204) return undefined as T
   return res.json()
@@ -96,11 +103,17 @@ export const api = {
     get: (id: string) => request<Record<string, unknown>>(`/units/${id}`),
     create: (data: Record<string, unknown>) =>
       request<{ id: string }>("/units/", { method: "POST", body: JSON.stringify(data) }),
+    update: (id: string, data: Record<string, unknown>) =>
+      request<{ id: string }>(`/units/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   },
 
   staff: {
     list: () => request<Array<{ id: string; name: string; email: string; phone: string; position: string; department: string; is_active: boolean }>>("/staff/"),
     get: (id: string) => request<Record<string, unknown>>(`/staff/${id}`),
+    create: (data: Record<string, unknown>) =>
+      request<{ id: string }>("/staff/", { method: "POST", body: JSON.stringify(data) }),
+    update: (id: string, data: Record<string, unknown>) =>
+      request<{ id: string }>(`/staff/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   },
 
   billing: {
@@ -151,7 +164,7 @@ export const api = {
         entity_type: string
         details: string | null
         created_at: string
-      }>>(`/audit-log/${qs ? `?${qs}` : ""}`)
+      }>>(`/audit-log${qs ? `?${qs}` : ""}`)
     },
   },
 }

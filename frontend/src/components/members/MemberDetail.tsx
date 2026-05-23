@@ -29,6 +29,8 @@ interface MemberDetailData {
   payment_history: PaymentRecord[]
 }
 
+const RESERVED_IDS = new Set(["new", "edit"])
+
 const MemberDetail = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -36,7 +38,10 @@ const MemberDetail = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!id) return
+    if (!id || RESERVED_IDS.has(id)) {
+      if (id && RESERVED_IDS.has(id)) navigate("/members", { replace: true })
+      return
+    }
     setLoading(true)
     api.members
       .get(id)
@@ -257,7 +262,7 @@ const MemberDetail = () => {
           <Button variant="outline" className="gap-2 font-semibold flex-1" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4" /> Back
           </Button>
-          <Button variant="outline" className="gap-2 font-semibold flex-1" onClick={() => navigate(`/units?member=${member.id}`)}>
+          <Button variant="outline" className="gap-2 font-semibold flex-1" onClick={() => member.unit_id ? navigate(`/units/${member.unit_id}`) : navigate("/members")}>
             <Building2 className="h-4 w-4" /> View Unit
           </Button>
         </div>

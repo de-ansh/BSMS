@@ -481,7 +481,7 @@ const UnitsMembers = () => {
                 <Button variant="outline" className="h-11 font-bold gap-2 text-xs" onClick={() => navigate(`/billing?member_id=${selectedMember.id}`)}>
                   <CreditCard className="h-4 w-4" /> Ledger
                 </Button>
-                <Button variant="outline" className="h-11 font-bold gap-2 text-xs" onClick={() => navigate("/notices/new", { state: { memberId: selectedMember.id } })}>
+                <Button variant="outline" className="h-11 font-bold gap-2 text-xs" onClick={() => navigate("/notices", { state: { compose: true } })}>
                   <Send className="h-4 w-4" /> Send Notice
                 </Button>
               </div>

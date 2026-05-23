@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent } from "@/components/ui/card"
-import { Mail, Lock, Eye, EyeOff, Building2, ShieldCheck, Wallet } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff, Building2, ShieldCheck, Wallet, Moon, Sun } from "lucide-react"
 import { api } from "@/lib/api"
+import { getInitialTheme, toggleTheme } from "@/lib/theme"
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -17,6 +18,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme)
 
   useEffect(() => {
     if (localStorage.getItem("bsms_token")) {
@@ -40,7 +42,16 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-4 right-4 text-slate-500"
+        onClick={() => setTheme(toggleTheme(theme))}
+        aria-label="Toggle color mode"
+      >
+        {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      </Button>
       <Card className="max-w-5xl w-full grid md:grid-cols-2 min-h-[600px] overflow-hidden shadow-2xl border-none">
         <div className="hidden md:flex bg-blue-50/50 dark:bg-blue-900/10 flex-col justify-between p-12 relative overflow-hidden border-r">
           <div className="relative z-10">

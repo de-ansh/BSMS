@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #1e3a8a;
   --color-primary-foreground: #ffffff;
@@ -14,6 +16,7 @@
   --color-secondary: oklch(0.97 0.003 286.375);
   --color-secondary-foreground: oklch(0.205 0.006 286.375);
   --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: #ffffff;
   --color-muted: oklch(0.97 0.003 286.375);
   --color-muted-foreground: oklch(0.556 0.008 286.375);
   --color-accent: oklch(0.97 0.003 286.375);
@@ -23,4 +26,40 @@
   --color-card: #ffffff;
   --color-card-foreground: oklch(0.145 0.004 286.373);
   --radius: 0.5rem;
+}
+
+@layer theme {
+  :root,
+  :host {
+    @variant dark {
+      --color-border: oklch(0.32 0.01 286);
+      --color-input: oklch(0.32 0.01 286);
+      --color-background: oklch(0.145 0.014 285);
+      --color-foreground: oklch(0.985 0.002 286);
+      --color-secondary: oklch(0.22 0.012 286);
+      --color-secondary-foreground: oklch(0.985 0.002 286);
+      --color-muted: oklch(0.22 0.012 286);
+      --color-muted-foreground: oklch(0.65 0.01 286);
+      --color-accent: oklch(0.22 0.012 286);
+      --color-accent-foreground: oklch(0.985 0.002 286);
+      --color-popover: oklch(0.18 0.012 286);
+      --color-popover-foreground: oklch(0.985 0.002 286);
+      --color-card: oklch(0.18 0.012 286);
+      --color-card-foreground: oklch(0.985 0.002 286);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  :root.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
 }

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import {
-  ArrowLeft, Building2, Home, BedDouble, Bath, Users, Edit3,
-  ChevronLeft, ChevronRight, MapPin, DollarSign
+  ArrowLeft, Building2, Users, Edit3, MapPin, DollarSign, BedDouble, Bath, Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -12,7 +11,12 @@ import {
   Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select"
 import { api } from "@/lib/api"
+
+const RESERVED_IDS = new Set(["new", "edit"])
 
 interface UnitData {
   id: string
@@ -32,16 +36,36 @@ const UnitDetail = () => {
   const navigate = useNavigate()
   const [unit, setUnit] = useState<UnitData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [status, setStatus] = useState("")
+  const [savingStatus, setSavingStatus] = useState(false)
 
   useEffect(() => {
-    if (!id) return
+    if (!id || RESERVED_IDS.has(id)) return
     setLoading(true)
     api.units
       .get(id)
-      .then((data) => setUnit(data as unknown as UnitData))
+      .then((data) => {
+        const u = data as unknown as UnitData
+        setUnit(u)
+        setStatus(u.status)
+      })
       .catch(() => navigate("/members"))
       .finally(() => setLoading(false))
   }, [id, navigate])
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (!id || !unit) return
+    setStatus(newStatus)
+    setSavingStatus(true)
+    try {
+      await api.units.update(id, { status: newStatus })
+      setUnit({ ...unit, status: newStatus })
+    } catch {
+      setStatus(unit.status)
+    } finally {
+      setSavingStatus(false)
+    }
+  }
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -136,9 +160,19 @@ const UnitDetail = () => {
             <Button variant="outline" className="gap-2 font-semibold text-xs sm:text-sm" onClick={() => navigate(`/units/${unit.id}/edit`)}>
               <Edit3 className="h-4 w-4" /> Edit Unit
             </Button>
-            <Button variant="default" className="gap-2 font-semibold text-xs sm:text-sm" onClick={() => navigate(`/units/${unit.id}/status`)}>
-              <MapPin className="h-4 w-4" /> Change Status
-            </Button>
+            <div className="flex items-center gap-2">
+              <Select value={status} onValueChange={handleStatusChange} disabled={savingStatus}>
+                <SelectTrigger className="w-[140px] h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vacant">Vacant</SelectItem>
+                  <SelectItem value="occupied">Occupied</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
+                </SelectContent>
+              </Select>
+              {savingStatus && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
+            </div>
           </div>
         </div>
 

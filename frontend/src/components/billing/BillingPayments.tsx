@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import {
   CreditCard, Plus, Eye, Search, Download, Receipt,
   CheckCircle2, Clock, AlertTriangle, ArrowUpDown, Filter
@@ -69,6 +69,8 @@ const formatDate = (dateStr: string) => {
 
 const BillingPayments = () => {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const memberFilter = searchParams.get("member_id") || ""
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
@@ -106,6 +108,7 @@ const BillingPayments = () => {
   const pendingInvoices = invoices.filter(i => i.status === "pending")
 
   const filteredInvoices = invoices.filter(inv => {
+    if (memberFilter && inv.member_id !== memberFilter) return false
     if (statusFilter !== "all" && inv.status !== statusFilter) return false
     if (searchQuery) {
       const q = searchQuery.toLowerCase()
@@ -114,6 +117,28 @@ const BillingPayments = () => {
     }
     return true
   })
+
+  const handleExport = () => {
+    const headers = ["Invoice Number", "Member", "Amount", "Due Date", "Status", "Created"]
+    const rows = filteredInvoices.map((inv) => [
+      inv.invoice_number,
+      getMemberName(inv.member_id),
+      inv.amount,
+      inv.due_date,
+      inv.status,
+      inv.created_at,
+    ])
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n")
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `invoices-${new Date().toISOString().slice(0, 10)}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
 
   if (loading) {
     return (
@@ -135,10 +160,13 @@ const BillingPayments = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Billing & Payments</h1>
-          <p className="text-sm text-slate-500 mt-1">{invoices.length} total invoices</p>
+          <p className="text-sm text-slate-500 mt-1">
+            {filteredInvoices.length} invoice{filteredInvoices.length !== 1 ? "s" : ""}
+            {memberFilter ? ` for ${getMemberName(memberFilter)}` : ""}
+          </p>
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <Button variant="outline" className="gap-2 font-semibold" onClick={() => navigate("/billing/export")}>
+          <Button variant="outline" className="gap-2 font-semibold" onClick={handleExport} disabled={filteredInvoices.length === 0}>
             <Download className="h-4 w-4" /> Export
           </Button>
           <Button className="gap-2 font-semibold" onClick={() => navigate("/billing/new")}>

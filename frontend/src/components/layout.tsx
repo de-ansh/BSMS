@@ -27,11 +27,7 @@ const Layout = () => {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null)
-  const [theme, setTheme] = useState<"light" | "dark">("light")
-
-  useEffect(() => {
-    setTheme(getInitialTheme())
-  }, [])
+  const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme)
 
   useEffect(() => {
     const token = localStorage.getItem("bsms_token")

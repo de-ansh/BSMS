@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom"
 import {
   Megaphone, Plus, Send, X, Loader2, Trash2,
   BadgeAlert, Info, AlertTriangle
@@ -71,6 +72,7 @@ function getInitials(name: string): string {
 }
 
 const NoticesCommunication = () => {
+  const location = useLocation()
   const [notices, setNotices] = useState<Notice[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -94,6 +96,14 @@ const NoticesCommunication = () => {
   useEffect(() => {
     fetchNotices()
   }, [])
+
+  useEffect(() => {
+    const state = location.state as { compose?: boolean } | null
+    if (state?.compose) {
+      setShowCompose(true)
+      window.history.replaceState({}, document.title)
+    }
+  }, [location.state])
 
   const handleDelete = async (id: string) => {
     try {
