@@ -48,56 +48,62 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 relative">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-4 right-4 text-slate-500"
-        onClick={() => setTheme(toggleTheme(theme))}
-        aria-label="Toggle color mode"
-      >
-        {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-      </Button>
-      <Card className="max-w-5xl w-full grid md:grid-cols-2 min-h-[600px] overflow-hidden shadow-2xl border-none">
-        <div className="hidden md:flex bg-blue-50/50 dark:bg-blue-900/10 flex-col justify-between p-12 relative overflow-hidden border-r">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-slate-500 hover:text-white glass"
+          onClick={() => setTheme(toggleTheme(theme))}
+          aria-label="Toggle color mode"
+        >
+          {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </Button>
+      </div>
+
+      <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-600/20 blur-[120px]" />
+      <div className="absolute bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-cyan-400/20 blur-[100px]" />
+
+      <Card className="glass-card max-w-5xl w-full grid md:grid-cols-2 min-h-[600px] overflow-hidden border-none z-10 relative">
+        <div className="hidden md:flex bg-black/20 flex-col justify-between p-12 relative overflow-hidden border-r border-white/5">
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-12">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-primary-foreground shadow-lg">
-                <Building2 className="h-6 w-6" />
+            <div className="flex items-center gap-3 mb-12">
+              <div className="w-12 h-12 bg-primary/20 border border-primary/50 rounded-xl flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+                <Building2 className="h-6 w-6 drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]" />
               </div>
-              <span className="text-2xl font-bold text-primary tracking-tight">BSMS</span>
+              <span className="text-2xl font-bold neon-text tracking-widest uppercase">BSMS.</span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white leading-tight mb-6">
-              Manage Your <br /><span className="text-primary">Building.</span> Effortlessly.
+            <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
+              SYSTEM <br /><span className="neon-text">ACCESS.</span>
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed">
-              One system for members, staff, and society finances. Modern solutions for urban living.
+            <p className="text-lg text-slate-400 max-w-sm leading-relaxed font-light">
+              Secure authentication gateway for building management and operations.
             </p>
           </div>
 
           <div className="relative z-10 space-y-6">
             <FeatureItem
-              icon={<ShieldCheck className="text-primary h-6 w-6" />}
-              title="Secure Access"
-              description="End-to-end encrypted portal"
+              icon={<ShieldCheck className="text-primary h-6 w-6 drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]" />}
+              title="Secure Gateway"
+              description="End-to-end encrypted protocol"
             />
             <FeatureItem
-              icon={<Wallet className="text-primary h-6 w-6" />}
-              title="Financial Transparency"
-              description="Real-time maintenance tracking"
+              icon={<Wallet className="text-primary h-6 w-6 drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]" />}
+              title="Financial Subsystem"
+              description="Real-time transaction tracking"
             />
           </div>
         </div>
 
-        <CardContent className="p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-background">
+        <CardContent className="p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-black/40 backdrop-blur-sm">
           <div className="mb-10 text-center md:text-left">
             <div className="md:hidden flex justify-center mb-6">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center text-primary-foreground shadow-lg">
-                <Building2 className="h-6 w-6" />
+              <div className="w-12 h-12 bg-primary/20 border border-primary/50 rounded-xl flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+                <Building2 className="h-6 w-6 drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Welcome Back</h2>
-            <p className="text-slate-500 dark:text-slate-400">Enter your credentials to access the portal</p>
+            <h2 className="text-2xl font-bold text-white mb-2 tracking-wide">AUTHENTICATE</h2>
+            <p className="text-slate-400 font-light text-sm">Enter credentials to initialize session</p>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -108,12 +114,12 @@ const LoginPage = () => {
             )}
 
             <div className="space-y-3">
-              <Label className="text-sm font-semibold">Select Role</Label>
+              <Label className="text-sm font-medium tracking-wider text-slate-300">AUTHORIZATION LEVEL</Label>
               <Tabs value={role} onValueChange={setRole} className="w-full">
-                <TabsList className="grid w-full grid-cols-3 bg-slate-100 dark:bg-slate-800">
-                  <TabsTrigger value="resident">Resident</TabsTrigger>
-                  <TabsTrigger value="admin">Society Admin</TabsTrigger>
-                  <TabsTrigger value="super_admin">Platform</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10 p-1">
+                  <TabsTrigger value="resident" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-[0_0_10px_rgba(0,240,255,0.2)] transition-all">Resident</TabsTrigger>
+                  <TabsTrigger value="admin" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-[0_0_10px_rgba(0,240,255,0.2)] transition-all">Society Admin</TabsTrigger>
+                  <TabsTrigger value="super_admin" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-[0_0_10px_rgba(0,240,255,0.2)] transition-all">Platform</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
@@ -168,8 +174,8 @@ const LoginPage = () => {
               </label>
             </div>
 
-            <Button className="w-full py-6 text-base font-bold shadow-xl shadow-primary/20" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
+            <Button className="w-full py-6 text-base font-bold bg-primary text-black hover:bg-primary/90 shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all duration-300 uppercase tracking-widest border border-primary" disabled={loading}>
+              {loading ? "INITIALIZING..." : "INITIATE SESSION"}
             </Button>
           </form>
         </CardContent>
@@ -180,12 +186,12 @@ const LoginPage = () => {
 
 const FeatureItem = ({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) => (
   <div className="flex items-center gap-4 group">
-    <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center flex-shrink-0 border">
+    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 shadow-[0_4px_15px_rgba(0,0,0,0.2)] flex items-center justify-center flex-shrink-0 group-hover:border-primary/50 group-hover:bg-primary/10 transition-all duration-300">
       {icon}
     </div>
     <div>
-      <p className="font-semibold text-slate-900 dark:text-white">{title}</p>
-      <p className="text-sm text-slate-500">{description}</p>
+      <p className="font-medium text-white tracking-wide">{title}</p>
+      <p className="text-sm text-slate-400 font-light">{description}</p>
     </div>
   </div>
 )

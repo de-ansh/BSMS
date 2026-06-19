@@ -63,7 +63,7 @@ const Layout = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="flex h-screen overflow-hidden bg-transparent">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -77,20 +77,20 @@ const Layout = () => {
         fixed lg:static inset-y-0 left-0 z-50
         w-64 lg:w-20 lg:hover:w-64 group
         transition-all duration-300 ease-in-out
-        bg-white dark:bg-slate-900 border-r
+        bg-black/20 backdrop-blur-md border-r border-white/10
         flex flex-col overflow-hidden
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
         <div className="p-6 flex items-center justify-between lg:justify-start gap-4 flex-shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center shrink-0">
-              <Building2 className="text-white h-5 w-5" />
+            <div className="w-8 h-8 bg-primary/20 border border-primary/50 shadow-[0_0_15px_rgba(0,240,255,0.3)] rounded flex items-center justify-center shrink-0">
+              <Building2 className="text-primary drop-shadow-[0_0_5px_rgba(0,240,255,0.8)] h-5 w-5" />
             </div>
-            <span className="font-bold text-xl tracking-tight lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <span className="font-bold text-xl text-white tracking-widest uppercase lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap">
               {user?.building_name || "BSMS Admin"}
             </span>
           </div>
-          <button className="lg:hidden" onClick={() => setSidebarOpen(false)}>
+          <button className="lg:hidden text-slate-400 hover:text-white" onClick={() => setSidebarOpen(false)}>
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -100,10 +100,10 @@ const Layout = () => {
             <Button
               key={item.path}
               variant={isActive(item.path) ? "secondary" : "ghost"}
-              className={`w-full justify-start gap-4 p-6 rounded-lg transition-all ${
+              className={`w-full justify-start gap-4 p-6 rounded-lg transition-all duration-300 ${
                 isActive(item.path)
-                  ? "bg-primary/10 text-primary hover:bg-primary/15"
-                  : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50"
+                  ? "bg-primary/20 text-primary shadow-[0_0_10px_rgba(0,240,255,0.2)] border border-primary/30"
+                  : "text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
               onClick={() => { navigate(item.path); setSidebarOpen(false) }}
             >
@@ -113,10 +113,10 @@ const Layout = () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t flex-shrink-0 space-y-2">
+        <div className="p-4 border-t border-white/10 flex-shrink-0 space-y-2">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-4 p-6 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 opacity-50 cursor-not-allowed"
+            className="w-full justify-start gap-4 p-6 rounded-lg text-slate-400 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed"
             disabled
             title="Settings coming soon"
           >
@@ -125,7 +125,7 @@ const Layout = () => {
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start gap-4 p-6 rounded-lg text-slate-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+            className="w-full justify-start gap-4 p-6 rounded-lg text-slate-400 hover:bg-red-500/20 hover:text-red-400"
             onClick={handleLogout}
           >
             <LogOut className="h-5 w-5 shrink-0" />
@@ -135,14 +135,14 @@ const Layout = () => {
       </aside>
 
       <main className="flex-1 flex flex-col min-w-0 min-h-0 bg-transparent overflow-hidden">
-        <header className="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b px-4 md:px-8 flex items-center justify-between sticky top-0 z-30">
+        <header className="h-16 bg-black/20 backdrop-blur-md border-b border-white/10 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-4">
-            <button className="lg:hidden" onClick={() => setSidebarOpen(true)}>
+            <button className="lg:hidden text-slate-400 hover:text-white" onClick={() => setSidebarOpen(true)}>
               <Menu className="h-5 w-5" />
             </button>
             <div className="hidden md:flex relative max-w-sm w-full">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-              <Input placeholder="Search..." className="pl-10 bg-slate-100/50 border-none shadow-none focus-visible:ring-1 focus-visible:ring-primary h-10 w-48 lg:w-64" />
+              <Input placeholder="Search..." className="pl-10 bg-white/5 border border-white/10 text-white placeholder:text-slate-500 shadow-none focus-visible:ring-1 focus-visible:ring-primary h-10 w-48 lg:w-64" />
             </div>
           </div>
 
@@ -150,22 +150,22 @@ const Layout = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="text-slate-500 hidden sm:flex"
+              className="text-slate-400 hover:text-white hidden sm:flex glass"
               onClick={() => setTheme(toggleTheme(theme))}
               aria-label="Toggle color mode"
             >
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <Button variant="ghost" size="icon" className="text-slate-500 hidden sm:flex">
+            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white hidden sm:flex glass">
               <HelpCircle className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold leading-none">{user?.name || "User"}</p>
-                <p className="text-xs text-slate-500">{user?.email || ""}</p>
+                <p className="text-sm font-bold text-white tracking-wide leading-none">{user?.name || "User"}</p>
+                <p className="text-xs text-slate-400 mt-1">{user?.email || ""}</p>
               </div>
-              <Avatar className="h-9 w-9 border-2 border-transparent">
-                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+              <Avatar className="h-9 w-9 border border-primary/50 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+                <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
                   {user?.name?.split(" ").map(n => n[0]).join("") || "U"}
                 </AvatarFallback>
               </Avatar>

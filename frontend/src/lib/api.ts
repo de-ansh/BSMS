@@ -15,10 +15,12 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, { ...options, headers })
   if (res.status === 401) {
     localStorage.removeItem("bsms_token")
-    if (window.location.pathname !== "/login") {
-      window.location.href = "/login"
+    if (path !== "/auth/login") {
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login"
+      }
+      throw new Error("Session expired. Please sign in again.")
     }
-    throw new Error("Session expired. Please sign in again.")
   }
   if (!res.ok) {
     const error = await res.json().catch(() => ({ detail: res.statusText }))

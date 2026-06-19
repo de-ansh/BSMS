@@ -56,7 +56,7 @@ const Dashboard = () => {
       <div className="p-8 max-w-7xl mx-auto w-full h-full overflow-y-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
           {[1, 2, 3, 4].map((i) => (
-            <Card key={i}><CardContent className="p-6"><div className="h-20 bg-slate-200 dark:bg-slate-800 rounded" /></CardContent></Card>
+            <Card key={i} className="glass-card"><CardContent className="p-6"><div className="h-20 bg-white/5 rounded" /></CardContent></Card>
           ))}
         </div>
       </div>
@@ -73,13 +73,13 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        <Card className="lg:col-span-2 shadow-sm">
+        <Card className="lg:col-span-2 glass-card">
           <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 md:pb-6">
-            <CardTitle className="text-lg font-bold">Unit & Occupancy Overview</CardTitle>
+            <CardTitle className="text-lg font-bold text-white tracking-wide">Unit Map & Telemetry</CardTitle>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <LegendItem color="bg-primary" label="Occupied" />
-              <LegendItem color="bg-slate-200 dark:bg-slate-700" label="Vacant" />
-              <LegendItem color="bg-amber-500" label="Maintenance" />
+              <LegendItem color="bg-primary shadow-[0_0_8px_#00f0ff]" label="Occupied" />
+              <LegendItem color="bg-white/10 border border-white/20" label="Vacant" />
+              <LegendItem color="bg-amber-500 shadow-[0_0_8px_#f59e0b]" label="Maintenance" />
             </div>
           </CardHeader>
           <CardContent>
@@ -94,17 +94,17 @@ const Dashboard = () => {
               ))}
             </div>
           </CardContent>
-          <CardFooter className="justify-center border-t py-4">
-            <Button variant="link" className="text-primary font-semibold gap-2" onClick={() => navigate("/members")}>
+          <CardFooter className="justify-center border-t border-white/10 py-4">
+            <Button variant="link" className="text-primary hover:text-white transition-colors font-semibold gap-2 uppercase tracking-widest text-xs" onClick={() => navigate("/members")}>
               View All Units <ArrowRight className="h-4 w-4" />
             </Button>
           </CardFooter>
         </Card>
 
-        <Card className="shadow-sm flex flex-col h-[400px] md:h-[480px]">
+        <Card className="glass-card flex flex-col h-[400px] md:h-[480px]">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle className="text-lg font-bold">Recent Notices</CardTitle>
-            <Button variant="link" size="sm" className="text-primary text-xs font-semibold" onClick={() => navigate("/notices")}>
+            <CardTitle className="text-lg font-bold text-white tracking-wide">System Logs</CardTitle>
+            <Button variant="link" size="sm" className="neon-text text-xs font-semibold tracking-widest uppercase" onClick={() => navigate("/notices")}>
               View All
             </Button>
           </CardHeader>
@@ -125,21 +125,21 @@ const Dashboard = () => {
               </div>
             </ScrollArea>
           </CardContent>
-          <CardFooter className="p-4 bg-slate-50/50 dark:bg-slate-800/50 border-t">
-            <Button className="w-full gap-2 font-semibold" onClick={() => navigate("/notices")}>
-              <PlusSquare className="h-4 w-4" /> Post New Notice
+          <CardFooter className="p-4 bg-black/40 border-t border-white/10">
+            <Button className="w-full gap-2 font-bold tracking-widest uppercase bg-primary text-black hover:bg-primary/90 shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_20px_rgba(0,240,255,0.5)] border border-primary transition-all duration-300" onClick={() => navigate("/notices")}>
+              <PlusSquare className="h-4 w-4" /> Broadcast Notice
             </Button>
           </CardFooter>
         </Card>
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-lg font-bold">Quick Actions</h2>
+        <h2 className="text-lg font-bold text-white tracking-wide uppercase">Quick Operations</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
           <ActionButton icon={<PlusSquare />} label="Add Member" primary onClick={() => navigate("/members/new")} />
-          <ActionButton icon={<CreditCard />} label="Generate Bills" onClick={() => navigate("/billing")} />
+          <ActionButton icon={<CreditCard />} label="Process Bills" onClick={() => navigate("/billing")} />
           <ActionButton icon={<Users />} label="Manage Staff" onClick={() => navigate("/staff")} />
-          <ActionButton icon={<LogOut />} label="View Reports" onClick={() => navigate("/audit-log")} />
+          <ActionButton icon={<LogOut />} label="Audit Logs" onClick={() => navigate("/audit-log")} />
         </div>
       </div>
     </div>
@@ -150,24 +150,24 @@ const StatCard = ({ label, value, subtext, icon, color }: {
   label: string; value: string; subtext: string; icon: React.ReactElement; color: string
 }) => {
   const colors: Record<string, string> = {
-    blue: "bg-blue-100 dark:bg-blue-900/30 text-blue-600",
-    emerald: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600",
-    amber: "bg-amber-100 dark:bg-amber-900/30 text-amber-600",
-    purple: "bg-purple-100 dark:bg-purple-900/30 text-purple-600",
+    blue: "bg-primary/20 text-primary shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-primary/50",
+    emerald: "bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.3)] border border-emerald-500/50",
+    amber: "bg-amber-500/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)] border border-amber-500/50",
+    purple: "bg-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.3)] border border-indigo-500/50",
   }
 
   return (
-    <Card className="shadow-sm">
+    <Card className="glass-card hover:border-white/30">
       <CardContent className="p-4 md:p-6">
         <div className="flex items-center justify-between mb-3 md:mb-4">
-          <span className="text-slate-500 text-xs md:text-sm font-medium uppercase tracking-wider">{label}</span>
+          <span className="text-slate-400 text-xs md:text-sm font-bold uppercase tracking-widest">{label}</span>
           <div className={`p-2 rounded-lg ${colors[color]}`}>
             {icon}
           </div>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl md:text-3xl font-bold font-mono">{value}</span>
-          <span className="text-xs text-slate-400 font-medium truncate">{subtext}</span>
+          <span className="text-2xl md:text-3xl font-bold font-mono text-white">{value}</span>
+          <span className="text-xs text-slate-500 font-medium truncate uppercase tracking-wider">{subtext}</span>
         </div>
       </CardContent>
     </Card>
@@ -176,9 +176,9 @@ const StatCard = ({ label, value, subtext, icon, color }: {
 
 const UnitBlock = ({ id, status, occupant }: { id: string; status: 'occupied' | 'vacant' | 'maintenance'; occupant: string | null }) => {
   const statusStyles = {
-    occupied: "bg-primary text-white shadow-lg shadow-primary/20",
-    vacant: "bg-slate-100 dark:bg-slate-800 text-slate-500",
-    maintenance: "bg-amber-500 text-white shadow-lg shadow-amber-500/20",
+    occupied: "bg-primary/20 text-primary border border-primary shadow-[0_0_10px_rgba(0,240,255,0.4)] hover:shadow-[0_0_20px_rgba(0,240,255,0.8)]",
+    vacant: "bg-white/5 border border-white/10 text-slate-400 hover:border-white/30",
+    maintenance: "bg-amber-500/20 text-amber-400 border border-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.4)] hover:shadow-[0_0_20px_rgba(245,158,11,0.8)]",
   }
 
   return (
@@ -199,9 +199,9 @@ const UnitBlock = ({ id, status, occupant }: { id: string; status: 'occupied' | 
 
 const NoticeItem = ({ type, title, time }: { type: string; title: string; time: string }) => {
   return (
-    <div className="flex gap-4 p-3 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 rounded-lg border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all cursor-pointer">
-      <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-        type === 'high' ? 'bg-red-100 dark:bg-red-900/30 text-red-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-600'
+    <div className="flex gap-4 p-3 hover:bg-white/5 rounded-lg border border-transparent hover:border-white/10 transition-all cursor-pointer">
+      <div className={`shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center shadow-lg ${
+        type === 'high' ? 'bg-red-500/20 border-red-500/50 text-red-500 shadow-red-500/20' : 'bg-white/5 border-white/10 text-slate-400'
       }`}>
         {type === 'high' ? <BadgeAlert className="h-5 w-5" /> : <CalendarDays className="h-5 w-5" />}
       </div>
@@ -221,11 +221,13 @@ const ActionButton = ({ icon, label, primary = false, onClick }: {
 }) => (
   <Button
     variant={primary ? "default" : "outline"}
-    className="h-auto flex-col items-center gap-2 md:gap-3 p-4 md:p-6 rounded-xl transition-all hover:-translate-y-0.5"
+    className={`h-auto flex-col items-center gap-2 md:gap-3 p-4 md:p-6 rounded-xl transition-all hover:-translate-y-1 ${
+      primary ? "bg-primary text-black hover:bg-primary/90 shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.5)] border border-primary" : "glass hover:border-primary/50 text-slate-300"
+    }`}
     onClick={onClick}
   >
     {icon}
-    <span className="font-semibold text-sm md:text-base">{label}</span>
+    <span className="font-bold uppercase tracking-widest text-xs md:text-sm">{label}</span>
   </Button>
 )
 
