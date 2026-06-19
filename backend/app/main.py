@@ -4,7 +4,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.database import Base, engine
 from app.routers import (
     auth,
     audit_log,
@@ -17,14 +16,9 @@ from app.routers import (
     super_admin,
     units,
 )
-from app.services.schema_migrate import migrate_schema
-
-
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     settings.validate_for_startup()
-    Base.metadata.create_all(bind=engine)
-    migrate_schema(engine)
     yield
 
 

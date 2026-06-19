@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.dependencies import get_current_user, require_admin
 from app.models.building import Building
+from app.models.unit import Unit
 from app.models.user import User
 from app.schemas.building import BuildingResponse
 from app.services.building_scope import get_building_or_404, require_admin_building
@@ -27,6 +28,6 @@ def get_my_building(
         postal_code=building.postal_code,
         is_active=building.is_active,
         created_at=building.created_at,
-        admin_count=0,
-        unit_count=0,
+            admin_count=db.query(User).filter(User.building_id == building.id, User.role == "admin").count(),
+            unit_count=db.query(Unit).filter(Unit.building_id == building.id).count(),
     )
