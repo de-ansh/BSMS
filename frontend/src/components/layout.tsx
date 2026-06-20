@@ -18,6 +18,7 @@ const navItems = [
   { icon: <Building2 />, label: "Units & Members", path: "/members", adminOnly: true },
   { icon: <BadgeInfo />, label: "Staff", path: "/staff", adminOnly: true },
   { icon: <CreditCard />, label: "Billing", path: "/billing", adminOnly: true },
+  { icon: <Users />, label: "Visitors", path: "/visitors", adminOnly: false },
   { icon: <Bell />, label: "Notices", path: "/notices", adminOnly: false },
   { icon: <ShieldCheck />, label: "Audit Log", path: "/audit-log", adminOnly: true },
 ]

@@ -6,6 +6,7 @@ from app.models.staff import Staff
 from app.models.billing import Invoice, Payment
 from app.models.notice import Notice
 from app.models.audit_log import AuditLog
+from app.models.visitor import Visitor
 
 __all__ = [
     "Building",
@@ -17,4 +18,5 @@ __all__ = [
     "Payment",
     "Notice",
     "AuditLog",
+    "Visitor",
 ]

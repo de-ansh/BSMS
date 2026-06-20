@@ -253,4 +253,28 @@ export const api = {
       }>>(`/audit-log${qs ? `?${qs}` : ""}`)
     },
   },
+
+  visitors: {
+    list: () =>
+      request<Array<{
+        id: string
+        building_id: string
+        host_id: string
+        visitor_name: string
+        phone: string | null
+        purpose: string | null
+        status: string
+        expected_arrival: string | null
+        check_in_time: string | null
+        check_out_time: string | null
+        created_at: string
+      }>>("/visitors/"),
+    create: (data: Record<string, unknown>) =>
+      request<{ id: string }>("/visitors/", { method: "POST", body: JSON.stringify(data) }),
+    updateStatus: (id: string, status: string) =>
+      request<{ id: string }>(`/visitors/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      }),
+  },
 }

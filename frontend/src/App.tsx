@@ -19,6 +19,8 @@ import SuperAdminLayout from "@/components/super-admin/SuperAdminLayout"
 import BuildingsOverview from "@/components/super-admin/BuildingsOverview"
 import BuildingForm from "@/components/super-admin/BuildingForm"
 import BuildingDetail from "@/components/super-admin/BuildingDetail"
+import VisitorManagement from "@/components/visitors/VisitorManagement"
+import VisitorForm from "@/components/visitors/VisitorForm"
 
 const App = () => {
   return (
@@ -48,6 +50,8 @@ const App = () => {
           <Route path="/billing/:id" element={<InvoiceDetail />} />
           <Route path="/notices" element={<NoticesCommunication />} />
           <Route path="/audit-log" element={<AuditLog />} />
+          <Route path="/visitors" element={<VisitorManagement />} />
+          <Route path="/visitors/new" element={<VisitorForm />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
