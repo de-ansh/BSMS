@@ -12,6 +12,7 @@ class MemberCreate(BaseModel):
     unit_id: Optional[str] = None
     move_in_date: Optional[date] = None
     is_owner: bool = True
+    password: Optional[str] = None
 
 
 class MemberUpdate(BaseModel):

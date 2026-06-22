@@ -73,6 +73,7 @@ const UnitsMembers = () => {
   const [statusFilter, setStatusFilter] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [viewMode, setViewMode] = useState<"units" | "members">("units")
 
   useEffect(() => {
     Promise.all([api.units.list(), api.members.list()])
@@ -109,6 +110,14 @@ const UnitsMembers = () => {
       const q = searchQuery.toLowerCase()
       const occupant = unit.occupant_name?.toLowerCase() || ""
       if (!unit.unit_number.toLowerCase().includes(q) && !occupant.includes(q)) return false
+    }
+    return true
+  })
+
+  const filteredMembers = members.filter(member => {
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase()
+      if (!member.name.toLowerCase().includes(q) && !member.email.toLowerCase().includes(q)) return false
     }
     return true
   })
@@ -155,9 +164,34 @@ const UnitsMembers = () => {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Filter Bar */}
         <div className="p-4 bg-white dark:bg-slate-900 border-b flex flex-wrap items-end gap-4 z-20 shrink-0">
-          <div className="flex flex-col gap-1 min-w-[160px]">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Building</label>
-            <Select value={buildingFilter} onValueChange={setBuildingFilter}>
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg self-end shrink-0">
+            <button
+              onClick={() => setViewMode("units")}
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${
+                viewMode === "units" 
+                  ? "bg-white dark:bg-slate-700 shadow-sm text-primary" 
+                  : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              }`}
+            >
+              Units
+            </button>
+            <button
+              onClick={() => setViewMode("members")}
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${
+                viewMode === "members" 
+                  ? "bg-white dark:bg-slate-700 shadow-sm text-primary" 
+                  : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              }`}
+            >
+              Members
+            </button>
+          </div>
+
+          {viewMode === "units" && (
+            <>
+              <div className="flex flex-col gap-1 min-w-[160px]">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Building</label>
+                <Select value={buildingFilter} onValueChange={setBuildingFilter}>
               <SelectTrigger className="h-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
                 <SelectValue />
               </SelectTrigger>
@@ -184,6 +218,8 @@ const UnitsMembers = () => {
               </SelectContent>
             </Select>
           </div>
+          </>
+        )}
 
           <div className="flex-1 min-w-[200px]">
             <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">Search</label>
@@ -210,8 +246,9 @@ const UnitsMembers = () => {
 
         {/* Table Area */}
         <ScrollArea className="flex-1 bg-white dark:bg-slate-900">
-          {filteredUnits.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+          {viewMode === "units" ? (
+            filteredUnits.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-slate-400">
               <Building2 className="h-16 w-16 mb-4 text-slate-300 dark:text-slate-700" />
               <p className="text-lg font-semibold mb-1">No units found</p>
               <p className="text-sm">
@@ -308,6 +345,92 @@ const UnitsMembers = () => {
                 })}
               </TableBody>
             </Table>
+          )
+          ) : (
+            filteredMembers.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                <Users className="h-16 w-16 mb-4 text-slate-300 dark:text-slate-700" />
+                <p className="text-lg font-semibold mb-1">No members found</p>
+                <p className="text-sm">
+                  {searchQuery ? "Try adjusting your search query" : "Add your first member to get started"}
+                </p>
+                {!searchQuery && (
+                  <Button className="mt-4 gap-2" onClick={() => navigate("/members/new")}>
+                    <Plus className="h-4 w-4" /> Add Member
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <Table>
+                <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50 sticky top-0 z-10">
+                  <TableRow>
+                    <TableHead className="font-bold text-xs uppercase text-slate-500">Member</TableHead>
+                    <TableHead className="font-bold text-xs uppercase text-slate-500">Contact</TableHead>
+                    <TableHead className="font-bold text-xs uppercase text-slate-500 hidden md:table-cell">Unit</TableHead>
+                    <TableHead className="w-[80px] text-right font-bold text-xs uppercase text-slate-500">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredMembers.map(member => {
+                    const isSelected = selectedMemberId === member.id
+                    return (
+                      <TableRow
+                        key={member.id}
+                        className={`cursor-pointer transition-all ${
+                          isSelected
+                            ? "bg-primary/5 dark:bg-primary/10 border-l-4 border-l-primary"
+                            : "hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                        }`}
+                        onClick={() => { setSelectedMemberId(member.id); setSidebarOpen(true); }}
+                      >
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8 border-2 border-white dark:border-slate-800 shadow-sm shrink-0">
+                              <AvatarFallback className="text-xs bg-primary/10 text-primary font-bold">
+                                {member.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <span className="font-bold text-slate-900 dark:text-white block">
+                                {member.name}
+                              </span>
+                              <span className="text-xs text-slate-500 font-medium">
+                                Joined {new Date(member.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <div className="text-sm font-medium text-slate-900 dark:text-white">{member.email}</div>
+                            <div className="text-xs text-slate-500 font-mono">{member.phone}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {member.unit_id ? (
+                            <Badge variant="outline" className="font-mono text-xs text-slate-600 dark:text-slate-400">
+                              {units.find(u => u.id === member.unit_id)?.unit_number || "Unknown"}
+                            </Badge>
+                          ) : (
+                            <span className="text-slate-400 italic text-xs font-medium">No Unit</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button
+                              variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-primary"
+                              onClick={e => { e.stopPropagation(); navigate(`/members/${member.id}`) }}
+                            >
+                              <Edit3 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            )
           )}
         </ScrollArea>
       </div>

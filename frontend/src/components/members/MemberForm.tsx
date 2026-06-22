@@ -28,6 +28,7 @@ const MemberForm = () => {
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [phone, setPhone] = useState("")
   const [unitId, setUnitId] = useState("")
   const [moveInDate, setMoveInDate] = useState("")
@@ -48,6 +49,7 @@ const MemberForm = () => {
       const result = await api.members.create({
         name: name.trim(),
         email: email.trim(),
+        password: password ? password : null,
         phone: phone.trim(),
         unit_id: unitId || null,
         move_in_date: moveInDate || null,
@@ -124,6 +126,20 @@ const MemberForm = () => {
                     placeholder="+1 555 0100"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
+                    disabled={submitting}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password">Login Password (Optional)</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Set password for resident login"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     disabled={submitting}
                   />
                 </div>

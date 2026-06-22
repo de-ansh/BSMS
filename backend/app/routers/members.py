@@ -12,6 +12,7 @@ from app.dependencies import (
     get_resident_member,
     require_admin,
 )
+from app.services.auth import hash_password
 from app.schemas.member import (
     MemberCreate,
     MemberResponse,
@@ -115,6 +116,19 @@ def create_member(
         is_owner=body.is_owner,
     )
     db.add(member)
+
+    if body.password:
+        existing_user = db.query(User).filter(User.email == body.email).first()
+        if not existing_user:
+            user = User(
+                email=body.email,
+                name=body.name,
+                password_hash=hash_password(body.password),
+                role="resident",
+                building_id=current_user.building_id,
+            )
+            db.add(user)
+
     db.commit()
     db.refresh(member)
     return member
