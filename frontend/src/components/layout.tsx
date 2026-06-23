@@ -20,6 +20,7 @@ const navItems = [
   { icon: <CreditCard />, label: "Billing", path: "/billing", adminOnly: true },
   { icon: <Users />, label: "Visitors", path: "/visitors", adminOnly: false },
   { icon: <Bell />, label: "Notices", path: "/notices", adminOnly: false },
+  { icon: <HelpCircle />, label: "Helpdesk", path: "/helpdesk", adminOnly: false },
   { icon: <ShieldCheck />, label: "Audit Log", path: "/audit-log", adminOnly: true },
 ]
 

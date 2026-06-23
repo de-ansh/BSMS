@@ -16,7 +16,9 @@ from app.routers import (
     super_admin,
     units,
     visitors,
+    complaints,
 )
+# (rest of file...)
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     settings.validate_for_startup()
@@ -48,3 +50,4 @@ app.include_router(billing.router)
 app.include_router(notices.router)
 app.include_router(audit_log.router)
 app.include_router(visitors.router)
+app.include_router(complaints.router)

@@ -21,6 +21,9 @@ import BuildingForm from "@/components/super-admin/BuildingForm"
 import BuildingDetail from "@/components/super-admin/BuildingDetail"
 import VisitorManagement from "@/components/visitors/VisitorManagement"
 import VisitorForm from "@/components/visitors/VisitorForm"
+import ComplaintList from "@/components/helpdesk/ComplaintList"
+import ComplaintForm from "@/components/helpdesk/ComplaintForm"
+import ComplaintDetail from "@/components/helpdesk/ComplaintDetail"
 
 const App = () => {
   return (
@@ -52,6 +55,9 @@ const App = () => {
           <Route path="/audit-log" element={<AuditLog />} />
           <Route path="/visitors" element={<VisitorManagement />} />
           <Route path="/visitors/new" element={<VisitorForm />} />
+          <Route path="/helpdesk" element={<ComplaintList />} />
+          <Route path="/helpdesk/new" element={<ComplaintForm />} />
+          <Route path="/helpdesk/:id" element={<ComplaintDetail />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

@@ -7,6 +7,7 @@ from app.models.billing import Invoice, Payment
 from app.models.notice import Notice
 from app.models.audit_log import AuditLog
 from app.models.visitor import Visitor
+from app.models.complaint import Complaint, ComplaintComment
 
 __all__ = [
     "Building",
@@ -19,4 +20,6 @@ __all__ = [
     "Notice",
     "AuditLog",
     "Visitor",
+    "Complaint",
+    "ComplaintComment",
 ]

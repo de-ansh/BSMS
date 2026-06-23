@@ -277,4 +277,17 @@ export const api = {
         body: JSON.stringify({ status }),
       }),
   },
+
+  complaints: {
+    list: () =>
+      request<Array<any>>("/complaints/"),
+    get: (id: string) =>
+      request<any>(`/complaints/${id}`),
+    create: (data: { title: string; description: string; category: string }) =>
+      request<any>("/complaints/", { method: "POST", body: JSON.stringify(data) }),
+    update: (id: string, data: { status?: string; assigned_staff_id?: string | null }) =>
+      request<any>(`/complaints/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+    addComment: (id: string, comment: string) =>
+      request<any>(`/complaints/${id}/comments`, { method: "POST", body: JSON.stringify({ comment }) }),
+  },
 }
