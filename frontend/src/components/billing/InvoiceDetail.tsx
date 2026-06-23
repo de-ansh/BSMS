@@ -157,10 +157,18 @@ const InvoiceDetail = () => {
               <CardTitle className="text-lg font-bold">Invoice Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Amount</p>
                   <p className="text-2xl font-bold font-mono">{formatCurrency(amount)}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Paid</p>
+                  <p className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">{formatCurrency(paidTotal)}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Remaining</p>
+                  <p className="text-2xl font-bold font-mono text-amber-600 dark:text-amber-400">{formatCurrency(remaining)}</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Status</p>

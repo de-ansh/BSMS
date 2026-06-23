@@ -32,7 +32,7 @@ class InvoiceResponse(BaseModel):
 class InvoiceDetailResponse(InvoiceResponse):
     member_name: Optional[str] = None
     unit_number: Optional[str] = None
-    payments: list = []
+    payments: list["PaymentResponse"] = []
 
 
 class PaymentCreate(BaseModel):
