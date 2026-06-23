@@ -8,6 +8,7 @@ from app.models.notice import Notice
 from app.models.audit_log import AuditLog
 from app.models.visitor import Visitor
 from app.models.complaint import Complaint, ComplaintComment
+from app.models.amenity import Amenity, Booking
 
 __all__ = [
     "Building",
@@ -22,4 +23,6 @@ __all__ = [
     "Visitor",
     "Complaint",
     "ComplaintComment",
+    "Amenity",
+    "Booking",
 ]

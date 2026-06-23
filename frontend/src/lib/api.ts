@@ -290,4 +290,20 @@ export const api = {
     addComment: (id: string, comment: string) =>
       request<any>(`/complaints/${id}/comments`, { method: "POST", body: JSON.stringify({ comment }) }),
   },
+
+  amenities: {
+    list: () =>
+      request<Array<any>>("/amenities/"),
+    create: (data: { name: string; description?: string | null; rules?: string | null; booking_required?: boolean }) =>
+      request<any>("/amenities/", { method: "POST", body: JSON.stringify(data) }),
+    listBookings: () =>
+      request<Array<any>>("/amenities/bookings"),
+    createBooking: (data: { amenity_id: string; start_time: string; end_time: string }) =>
+      request<any>("/amenities/bookings", { method: "POST", body: JSON.stringify(data) }),
+    updateBookingStatus: (id: string, status: string) =>
+      request<any>(`/amenities/bookings/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      }),
+  },
 }

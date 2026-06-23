@@ -17,6 +17,7 @@ from app.routers import (
     units,
     visitors,
     complaints,
+    amenities,
 )
 # (rest of file...)
 @asynccontextmanager
@@ -51,3 +52,4 @@ app.include_router(notices.router)
 app.include_router(audit_log.router)
 app.include_router(visitors.router)
 app.include_router(complaints.router)
+app.include_router(amenities.router)
