@@ -53,13 +53,13 @@ Prevent scheduling conflicts for shared spaces (Clubhouse, Party Hall, Swimming 
 Security verification and structured parking allocation.
 
 ### Backend Requirements
-- [ ] Create `Vehicle` model (`id`, `member_id`, `license_plate`, `make_model`, `color`).
-- [ ] Update `Unit` model or create `ParkingSlot` model to track designated parking bays.
-- [ ] Implement API routes to register/list vehicles and allocate/view parking spots.
+- [x] Create `Vehicle` model (`id`, `member_id`, `license_plate`, `make_model`, `color`).
+- [x] Update `Unit` model or create `ParkingSlot` model to track designated parking bays.
+- [x] Implement API routes to register/list vehicles and allocate/view parking spots.
 
 ### Frontend Requirements
-- [ ] Add **Vehicle Management** section inside resident Profile/Dashboard.
-- [ ] Add **Parking Allocation Grid** inside Admin's Units & Members panel.
+- [x] Add **Vehicle Management** section inside resident Profile/Dashboard.
+- [x] Add **Parking Allocation Grid** inside Admin's Units & Members panel.
 
 ---
 

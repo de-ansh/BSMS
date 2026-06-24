@@ -18,6 +18,8 @@ from app.routers import (
     visitors,
     complaints,
     amenities,
+    vehicles,
+    parking,
 )
 # (rest of file...)
 @asynccontextmanager
@@ -53,3 +55,5 @@ app.include_router(audit_log.router)
 app.include_router(visitors.router)
 app.include_router(complaints.router)
 app.include_router(amenities.router)
+app.include_router(vehicles.router)
+app.include_router(parking.router)

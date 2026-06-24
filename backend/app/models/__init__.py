@@ -9,6 +9,8 @@ from app.models.audit_log import AuditLog
 from app.models.visitor import Visitor
 from app.models.complaint import Complaint, ComplaintComment
 from app.models.amenity import Amenity, Booking
+from app.models.vehicle import Vehicle
+from app.models.parking import ParkingSlot
 
 __all__ = [
     "Building",
@@ -25,4 +27,6 @@ __all__ = [
     "ComplaintComment",
     "Amenity",
     "Booking",
+    "Vehicle",
+    "ParkingSlot",
 ]

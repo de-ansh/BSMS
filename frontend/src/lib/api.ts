@@ -306,4 +306,30 @@ export const api = {
         body: JSON.stringify({ status }),
       }),
   },
+
+  vehicles: {
+    list: () =>
+      request<Array<any>>("/vehicles"),
+    create: (data: { member_id?: string; license_plate: string; make_model: string; color: string }) =>
+      request<any>("/vehicles", { method: "POST", body: JSON.stringify(data) }),
+    delete: (id: string) =>
+      request<void>(`/vehicles/${id}`, { method: "DELETE" }),
+  },
+
+  parking: {
+    listSlots: () =>
+      request<Array<any>>("/parking/slots"),
+    createSlot: (data: { slot_number: string; status?: string }) =>
+      request<any>("/parking/slots", { method: "POST", body: JSON.stringify(data) }),
+    allocateSlot: (id: string, unitId: string | null) =>
+      request<any>(`/parking/slots/${id}/allocate`, {
+        method: "PATCH",
+        body: JSON.stringify({ unit_id: unitId }),
+      }),
+    updateSlotStatus: (id: string, status: string) =>
+      request<any>(`/parking/slots/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      }),
+  },
 }
