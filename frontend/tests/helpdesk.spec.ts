@@ -51,6 +51,7 @@ test.describe('Helpdesk & Complaint Management Workflows', () => {
     await page.getByText('Resident', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/notices/);
+    await expect(page.locator(`text=${seededData.member.email}`)).toBeVisible();
 
     // Go to Helpdesk
     await page.goto(baseURL + '/helpdesk');
@@ -98,6 +99,7 @@ test.describe('Helpdesk & Complaint Management Workflows', () => {
     await page.getByText('Society Admin', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page.locator(`text=${seededData.admin.email}`)).toBeVisible();
 
     // Go to Helpdesk
     await page.goto(baseURL + '/helpdesk');

@@ -113,7 +113,11 @@ const ParkingVehicleManagement = () => {
   const handleRegisterVehicle = async (e: React.FormEvent) => {
     e.preventDefault()
     setVehicleSubmitting(true)
-    setError("")
+    if (userRole === "admin" && !vehicleMemberId) {
+      setError("Please select an owner.")
+      setVehicleSubmitting(false)
+      return
+    }
     try {
       await api.vehicles.create({
         member_id: userRole === "admin" ? vehicleMemberId : undefined,
@@ -467,7 +471,7 @@ const ParkingVehicleManagement = () => {
                   {userRole === "admin" && (
                     <div className="space-y-2">
                       <Label className="text-slate-300">Owner (Member)</Label>
-                      <Select value={vehicleMemberId} onValueChange={setVehicleMemberId} required>
+                      <Select value={vehicleMemberId} onValueChange={setVehicleMemberId}>
                         <SelectTrigger className="bg-white/5 border border-white/10 text-white"><SelectValue placeholder="Select Member" /></SelectTrigger>
                         <SelectContent className="bg-slate-800 text-white border-white/10">
                           {members.map(m => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}

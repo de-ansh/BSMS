@@ -12,6 +12,7 @@ test.describe('Super Admin Workflows', () => {
     await page.getByText('Platform', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/super-admin/);
+    await expect(page.locator('text=Platform Super Admin')).toBeVisible();
   });
 
   test('should create a building and assign an admin to it', async ({ page }) => {

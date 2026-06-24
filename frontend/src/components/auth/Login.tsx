@@ -30,7 +30,7 @@ const LoginPage = () => {
     }).catch(() => localStorage.removeItem("bsms_token"))
   }, [navigate])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault()
     setError("")
     setLoading(true)

@@ -35,6 +35,7 @@ test.describe('Facility & Amenity Booking Workflows', () => {
     await page.getByText('Society Admin', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page.locator(`text=${seededData.admin.email}`)).toBeVisible();
 
     // Go to Amenities via Sidebar
     await page.locator('aside button:has-text("Amenities")').click();
@@ -63,6 +64,7 @@ test.describe('Facility & Amenity Booking Workflows', () => {
     await page.getByText('Resident', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/notices/);
+    await expect(page.locator(`text=${seededData.member.email}`)).toBeVisible();
 
     // Go to Amenities via Sidebar
     await page.locator('aside button:has-text("Amenities")').click();
@@ -112,6 +114,7 @@ test.describe('Facility & Amenity Booking Workflows', () => {
     await page.getByText('Society Admin', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page.locator(`text=${seededData.admin.email}`)).toBeVisible();
 
     // Go to Amenities via Sidebar
     await page.locator('aside button:has-text("Amenities")').click();

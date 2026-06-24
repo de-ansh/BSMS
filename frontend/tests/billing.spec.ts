@@ -18,6 +18,7 @@ test.describe('Billing & Payments Workflows', () => {
     await page.getByText('Society Admin', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page.locator(`text=${seededData.admin.email}`)).toBeVisible();
   });
 
   test('should create an invoice and record a payment', async ({ page }) => {

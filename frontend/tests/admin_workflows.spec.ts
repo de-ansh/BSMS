@@ -31,6 +31,7 @@ test.describe('Admin Core Workflows', () => {
     await page.getByText('Society Admin', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page.locator(`text=${adminCredentials.email}`)).toBeVisible();
   });
 
   test('should create unit and member', async ({ page }) => {

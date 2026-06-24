@@ -12,6 +12,9 @@ test.describe('Vehicle and Parking Space Management Workflows', () => {
   });
 
   test('should create, allocate parking slot as admin, then register and view vehicle as resident', async ({ page }) => {
+    page.on('console', msg => console.log('BROWSER CONSOLE:', msg.text()));
+    page.on('pageerror', err => console.log('BROWSER PAGEERROR:', err.message));
+
     // 1. Login as Admin
     await page.goto(baseURL + '/login');
     await page.fill('input[type="email"]', seededData.admin.email);
@@ -19,6 +22,7 @@ test.describe('Vehicle and Parking Space Management Workflows', () => {
     await page.getByText('Society Admin', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page.locator(`text=${seededData.admin.email}`)).toBeVisible();
 
     // 2. Navigate to Parking
     await page.goto(baseURL + '/parking');
@@ -55,6 +59,7 @@ test.describe('Vehicle and Parking Space Management Workflows', () => {
     await page.getByText('Resident', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/notices/);
+    await expect(page.locator(`text=${seededData.member.email}`)).toBeVisible();
 
     // 8. Go to Parking page
     await page.goto(baseURL + '/parking');
@@ -91,9 +96,11 @@ test.describe('Vehicle and Parking Space Management Workflows', () => {
     await page.getByText('Society Admin', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page.locator(`text=${seededData.admin.email}`)).toBeVisible();
     
     // Go to Parking Ledger
     await page.goto(baseURL + '/parking');
+    await expect(page.locator('text=Vehicles & Parking')).toBeVisible();
     
     // Verify the resident's registered vehicle shows up in Admin's Ledger
     await expect(page.locator(`text=${plateNumber}`)).toBeVisible();

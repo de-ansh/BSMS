@@ -21,6 +21,7 @@ test.describe('Visitor Management Workflows', () => {
     
     // Resident is redirected to /notices
     await expect(page).toHaveURL(/.*\/notices/);
+    await expect(page.locator(`text=${seededData.member.email}`)).toBeVisible();
 
     // 2. Navigate to Visitors
     await page.goto(baseURL + '/visitors');
@@ -61,6 +62,7 @@ test.describe('Visitor Management Workflows', () => {
     await page.getByText('Society Admin', { exact: true }).click();
     await page.getByText('INITIATE SESSION').click();
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page.locator(`text=${seededData.admin.email}`)).toBeVisible();
 
     // 9. Navigate to Visitors
     await page.goto(baseURL + '/visitors');
