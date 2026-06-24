@@ -50,10 +50,10 @@ test.describe('Vehicle and Parking Space Management Workflows', () => {
     await expect(page.locator(`text=Unit ${seededData.unit.unitNumber}`).first()).toBeVisible();
 
     // 6. Logout Admin
-    await page.evaluate(() => localStorage.removeItem('bsms_token'));
+    await page.getByRole('button', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(/.*\/login/);
 
     // 7. Login as Resident
-    await page.goto(baseURL + '/login');
     await page.fill('input[type="email"]', seededData.member.email);
     await page.fill('input[type="password"]', 'resident123');
     await page.getByText('Resident', { exact: true }).click();
@@ -87,10 +87,10 @@ test.describe('Vehicle and Parking Space Management Workflows', () => {
     await expect(page.locator(`text=${plateNumber}`)).toBeVisible();
 
     // 11. Logout Resident
-    await page.evaluate(() => localStorage.removeItem('bsms_token'));
+    await page.getByRole('button', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(/.*\/login/);
 
     // 12. Login as Admin again to verify the Vehicles Ledger
-    await page.goto(baseURL + '/login');
     await page.fill('input[type="email"]', seededData.admin.email);
     await page.fill('input[type="password"]', seededData.admin.password);
     await page.getByText('Society Admin', { exact: true }).click();

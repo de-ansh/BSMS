@@ -90,10 +90,10 @@ test.describe('Helpdesk & Complaint Management Workflows', () => {
     await expect(page.locator('text=Manage Ticket')).not.toBeVisible();
 
     // Logout
-    await page.evaluate(() => localStorage.removeItem('bsms_token'));
+    await page.getByRole('button', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(/.*\/login/);
 
     // === PHASE 2: Admin reviews ticket, assigns staff, updates status, and comments ===
-    await page.goto(baseURL + '/login');
     await page.fill('input[type="email"]', seededData.admin.email);
     await page.fill('input[type="password"]', seededData.admin.password);
     await page.getByText('Society Admin', { exact: true }).click();

@@ -17,7 +17,7 @@ const navItems = [
   { icon: <BarChart />, label: "Dashboard", path: "/dashboard", adminOnly: true },
   { icon: <Building2 />, label: "Units & Members", path: "/members", adminOnly: true },
   { icon: <BadgeInfo />, label: "Staff", path: "/staff", adminOnly: true },
-  { icon: <CreditCard />, label: "Billing", path: "/billing", adminOnly: true },
+  { icon: <CreditCard />, label: "Billing", path: "/billing", adminOnly: false },
   { icon: <Users />, label: "Visitors", path: "/visitors", adminOnly: false },
   { icon: <Bell />, label: "Notices", path: "/notices", adminOnly: false },
   { icon: <HelpCircle />, label: "Helpdesk", path: "/helpdesk", adminOnly: false },
@@ -45,7 +45,7 @@ const Layout = () => {
         return
       }
       setUser(profile)
-      const adminPaths = ["/dashboard", "/members", "/staff", "/billing", "/audit-log"]
+      const adminPaths = ["/dashboard", "/members", "/staff", "/audit-log"]
       const isAdminRoute = adminPaths.some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`))
       if (profile.role !== "admin" && isAdminRoute) {
         navigate("/notices", { replace: true })

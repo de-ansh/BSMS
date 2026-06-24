@@ -53,3 +53,16 @@ class PaymentResponse(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class InvoiceBulkGenerate(BaseModel):
+    due_date: date
+    period_start: Optional[date] = None
+    period_end: Optional[date] = None
+
+
+class PaymentSimulate(BaseModel):
+    invoice_id: str
+    card_number: str
+    expiry: str
+    cvv: str

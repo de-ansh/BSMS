@@ -52,11 +52,11 @@ test.describe('Visitor Management Workflows', () => {
     await expect(page.locator('text=Check In')).not.toBeVisible();
     await expect(page.locator('text=Deny')).not.toBeVisible();
 
-    // 7. Logout by clearing token and reloading
-    await page.evaluate(() => localStorage.removeItem('bsms_token'));
+    // 7. Logout by clicking logout button
+    await page.getByRole('button', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(/.*\/login/);
     
     // 8. Login as Admin
-    await page.goto(baseURL + '/login');
     await page.fill('input[type="email"]', seededData.admin.email);
     await page.fill('input[type="password"]', seededData.admin.password);
     await page.getByText('Society Admin', { exact: true }).click();

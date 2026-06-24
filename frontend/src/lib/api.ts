@@ -218,6 +218,16 @@ export const api = {
       request<{ id: string }>("/billing/invoices", { method: "POST", body: JSON.stringify(data) }),
     createPayment: (data: Record<string, unknown>) =>
       request<{ id: string }>("/billing/payments", { method: "POST", body: JSON.stringify(data) }),
+    autoGenerate: (data: { due_date: string; period_start?: string; period_end?: string }) =>
+      request<{ generated_count: number; total_amount: number }>("/billing/auto-generate", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    pay: (invoiceId: string, cardDetails: { card_number: string; expiry: string; cvv: string }) =>
+      request<{ id: string }>("/billing/pay", {
+        method: "POST",
+        body: JSON.stringify({ invoice_id: invoiceId, ...cardDetails }),
+      }),
   },
 
   notices: {

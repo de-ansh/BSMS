@@ -55,10 +55,10 @@ test.describe('Facility & Amenity Booking Workflows', () => {
     await expect(page.locator(`text=${amenityName}`)).toBeVisible();
 
     // Logout Admin
-    await page.evaluate(() => localStorage.removeItem('bsms_token'));
+    await page.getByRole('button', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(/.*\/login/);
 
     // === PHASE 2: Resident requests booking slot ===
-    await page.goto(baseURL + '/login');
     await page.fill('input[type="email"]', seededData.member.email);
     await page.fill('input[type="password"]', 'resident123');
     await page.getByText('Resident', { exact: true }).click();
@@ -105,10 +105,10 @@ test.describe('Facility & Amenity Booking Workflows', () => {
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
 
     // Logout Resident
-    await page.evaluate(() => localStorage.removeItem('bsms_token'));
+    await page.getByRole('button', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(/.*\/login/);
 
     // === PHASE 4: Admin Approves the booking ===
-    await page.goto(baseURL + '/login');
     await page.fill('input[type="email"]', seededData.admin.email);
     await page.fill('input[type="password"]', seededData.admin.password);
     await page.getByText('Society Admin', { exact: true }).click();

@@ -20,7 +20,11 @@ from app.schemas.billing import (
     InvoiceDetailResponse,
     PaymentCreate,
     PaymentResponse,
+    InvoiceBulkGenerate,
+    PaymentSimulate,
 )
+from app.services.audit import log_audit
+import uuid
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
@@ -149,4 +153,138 @@ def create_payment(
 
     db.commit()
     db.refresh(payment)
+    return payment
+
+
+@router.post("/auto-generate", status_code=201)
+def auto_generate_invoices(
+    body: InvoiceBulkGenerate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    if not current_user.building_id:
+        raise HTTPException(status_code=400, detail="Admin is not associated with any building")
+
+    # Find all units in this building
+    units = db.query(Unit).filter(Unit.building_id == current_user.building_id).all()
+    if not units:
+        return {"generated_count": 0, "total_amount": 0.0}
+
+    unit_ids = [u.id for u in units]
+    # Find active members for these units
+    members = db.query(Member).filter(
+        Member.unit_id.in_(unit_ids),
+        Member.is_active == True
+    ).all()
+
+    if not members:
+        return {"generated_count": 0, "total_amount": 0.0}
+
+    # Map unit_id to Unit
+    unit_map = {u.id: u for u in units}
+
+    generated_count = 0
+    total_amount = 0.0
+    base_count = db.query(Invoice).count()
+
+    for member in members:
+        if not member.unit_id:
+            continue
+        unit = unit_map.get(member.unit_id)
+        if not unit:
+            continue
+
+        # Check for existing invoices for the same unit and period to prevent double billing
+        if body.period_start and body.period_end:
+            existing = db.query(Invoice).filter(
+                Invoice.unit_id == unit.id,
+                Invoice.period_start == body.period_start,
+                Invoice.period_end == body.period_end,
+                Invoice.status != "cancelled"
+            ).first()
+            if existing:
+                continue
+
+        invoice_number = f"INV-{datetime.now().strftime('%Y%m')}-{(base_count + generated_count + 1):04d}"
+        invoice = Invoice(
+            invoice_number=invoice_number,
+            member_id=member.id,
+            unit_id=unit.id,
+            amount=unit.maintenance_fee,
+            due_date=body.due_date,
+            period_start=body.period_start,
+            period_end=body.period_end,
+            status="pending",
+        )
+        db.add(invoice)
+        generated_count += 1
+        total_amount += float(unit.maintenance_fee)
+
+    if generated_count > 0:
+        db.commit()
+        log_audit(
+            db=db,
+            action="auto_generate_invoices",
+            entity_type="invoice",
+            user_id=current_user.id,
+            details=f"Auto-generated {generated_count} invoices total value ${total_amount:.2f} for period {body.period_start} to {body.period_end}"
+        )
+
+    return {"generated_count": generated_count, "total_amount": total_amount}
+
+
+@router.post("/pay", response_model=PaymentResponse, status_code=201)
+def pay_invoice(
+    body: PaymentSimulate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    invoice = db.query(Invoice).filter(Invoice.id == body.invoice_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    assert_invoice_access(str(invoice.member_id), db, current_user)
+
+    if invoice.status == "paid":
+        raise HTTPException(status_code=400, detail="Invoice is already paid")
+
+    if not body.card_number or not body.expiry or not body.cvv:
+        raise HTTPException(status_code=400, detail="Invalid card details")
+
+    # Calculate remaining amount
+    total_paid = (
+        db.query(Payment)
+        .filter(Payment.invoice_id == body.invoice_id)
+        .with_entities(Payment.amount)
+        .all()
+    )
+    paid_sum = sum(p.amount for p in total_paid)
+    remaining = invoice.amount - paid_sum
+
+    if remaining <= 0:
+        invoice.status = "paid"
+        db.commit()
+        raise HTTPException(status_code=400, detail="Invoice is already fully paid")
+
+    payment = Payment(
+        invoice_id=body.invoice_id,
+        amount=remaining,
+        payment_date=datetime.now().date(),
+        payment_method="credit_card",
+        reference=f"SIM-{uuid.uuid4().hex[:8].upper()}",
+    )
+    db.add(payment)
+    invoice.status = "paid"
+    db.commit()
+    db.refresh(payment)
+
+    log_audit(
+        db=db,
+        action="pay_invoice_online",
+        entity_type="payment",
+        user_id=current_user.id,
+        entity_id=payment.id,
+        details=f"Paid invoice {invoice.invoice_number} via online simulation. Reference: {payment.reference}"
+    )
+
     return payment

@@ -23,7 +23,7 @@ test.describe('Billing & Payments Workflows', () => {
 
   test('should create an invoice and record a payment', async ({ page }) => {
     // Navigate to Billing
-    await page.goto(baseURL + '/billing');
+    await page.getByRole('button', { name: 'Billing' }).click();
 
     // Click Create Invoice button
     await page.getByRole('button', { name: 'Create Invoice' }).first().click();
@@ -57,5 +57,65 @@ test.describe('Billing & Payments Workflows', () => {
     // Verify payment recorded in history and amount remaining is $100.00
     await expect(page.locator('text=$100.00')).toBeVisible();
     await expect(page.locator('text=$50.00')).toHaveCount(2); // One in payment history, one in Paid grid cell
+  });
+
+  test('should support bulk auto-generation and resident online payment', async ({ page }) => {
+    // === PHASE 1: Admin bulk auto-generates invoices ===
+    // Navigate to Billing
+    await page.getByRole('button', { name: 'Billing' }).click();
+
+    // Click Auto-Bill
+    await page.getByRole('button', { name: 'Auto-Bill' }).click();
+
+    // Fill form
+    const today = new Date().toISOString().slice(0, 10);
+    await page.fill('input[id="dueDate"]', today);
+    await page.fill('input[id="periodStart"]', '2026-06-01');
+    await page.fill('input[id="periodEnd"]', '2026-06-30');
+
+    // Submit
+    await page.getByRole('button', { name: 'Generate Bills' }).click();
+
+    // Verify success message appears in modal
+    await expect(page.locator('text=Generation Complete!')).toBeVisible();
+    await expect(page.locator('text=Successfully created 1 monthly maintenance invoices')).toBeVisible();
+
+    // Close success screen
+    await page.getByRole('button', { name: 'Close' }).click();
+
+    // Logout Admin
+    await page.getByRole('button', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(/.*\/login/);
+
+    // === PHASE 2: Resident checks invoice and pays online ===
+    await page.fill('input[type="email"]', seededData.member.email);
+    await page.fill('input[type="password"]', 'resident123');
+    await page.getByText('Resident', { exact: true }).click();
+    await page.getByText('INITIATE SESSION').click();
+    await expect(page).toHaveURL(/.*\/notices/);
+
+    // Go to Billing
+    await page.getByRole('button', { name: 'Billing' }).click();
+
+    // Pay Now
+    await page.getByRole('button', { name: 'Pay Now' }).first().click();
+
+    // Fill Card Form
+    await page.fill('input[id="cardHolder"]', seededData.member.name);
+    await page.fill('input[id="cardNumber"]', '4111222233334444');
+    await page.fill('input[id="expiry"]', '12/28');
+    await page.fill('input[id="cvv"]', '123');
+
+    // Click Complete Payment
+    await page.getByRole('button', { name: 'Complete Payment' }).click();
+
+    // Verify approved screen
+    await expect(page.locator('text=Payment Approved')).toBeVisible();
+
+    // Close modal
+    await page.getByRole('button', { name: 'Back to Ledger' }).click();
+
+    // Verify status shows Paid in list
+    await expect(page.locator('text=Paid').first()).toBeVisible();
   });
 });

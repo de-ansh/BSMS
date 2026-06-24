@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import {
-  ArrowLeft, Printer, CreditCard, CalendarDays, Building2, User as UserIcon, Loader2
+  ArrowLeft, Printer, CreditCard, CalendarDays, Building2, User as UserIcon, Loader2, X, CheckCircle2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -39,6 +39,7 @@ const InvoiceDetail = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [invoice, setInvoice] = useState<Record<string, unknown> | null>(null)
+  const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [paymentAmount, setPaymentAmount] = useState("")
@@ -46,6 +47,18 @@ const InvoiceDetail = () => {
   const [paymentMethod, setPaymentMethod] = useState("cash")
   const [recording, setRecording] = useState(false)
   const [paymentError, setPaymentError] = useState("")
+
+  // Payment Modal State
+  const [showPayModal, setShowPayModal] = useState(false)
+  const [cardForm, setCardForm] = useState({
+    card_number: "",
+    expiry: "",
+    cvv: "",
+    name: "",
+  })
+  const [payLoading, setPayLoading] = useState(false)
+  const [payError, setPayError] = useState("")
+  const [paySuccess, setPaySuccess] = useState(false)
 
   const loadInvoice = () => {
     if (!id || RESERVED_IDS.has(id)) return
@@ -63,6 +76,7 @@ const InvoiceDetail = () => {
       return
     }
     loadInvoice()
+    api.auth.me().then(setUser).catch(() => {})
   }, [id, navigate])
 
   const handleRecordPayment = async (e: React.FormEvent) => {
@@ -83,6 +97,26 @@ const InvoiceDetail = () => {
       setPaymentError(err instanceof Error ? err.message : "Failed to record payment")
     } finally {
       setRecording(false)
+    }
+  }
+
+  const handlePayInvoice = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!id) return
+    setPayLoading(true)
+    setPayError("")
+    try {
+      await api.billing.pay(id, {
+        card_number: cardForm.card_number,
+        expiry: cardForm.expiry,
+        cvv: cardForm.cvv,
+      })
+      setPaySuccess(true)
+      loadInvoice()
+    } catch (err) {
+      setPayError(err instanceof Error ? err.message : "Payment processing failed")
+    } finally {
+      setPayLoading(false)
     }
   }
 
@@ -277,7 +311,7 @@ const InvoiceDetail = () => {
             </CardContent>
           </Card>
 
-          {canRecordPayment && (
+          {user?.role === "admin" && canRecordPayment && (
             <Card className="shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg font-bold">Record Payment</CardTitle>
@@ -316,8 +350,151 @@ const InvoiceDetail = () => {
               </CardContent>
             </Card>
           )}
+
+          {user?.role === "resident" && canRecordPayment && (
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold">Online Payment</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-slate-500 font-light leading-relaxed">
+                  You can pay the remaining outstanding balance of <span className="font-bold font-mono text-slate-900 dark:text-white">{formatCurrency(remaining)}</span> online via our simulated credit card checkout.
+                </p>
+                <Button
+                  className="w-full bg-primary text-black hover:bg-primary/95 font-bold uppercase tracking-widest text-xs h-10 gap-2 shadow-[0_0_15px_rgba(0,240,255,0.2)]"
+                  onClick={() => {
+                    setCardForm({ card_number: "", expiry: "", cvv: "", name: "" })
+                    setPayError("")
+                    setPaySuccess(false)
+                    setShowPayModal(true)
+                  }}
+                >
+                  <CreditCard className="h-4 w-4" /> Pay Outstanding Now
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
+
+      {/* ================= MODAL: SIMULATED PAYMENT ================= */}
+      {showPayModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="glass-card max-w-md w-full p-6 space-y-4 border border-white/10 rounded-xl bg-slate-900 text-white">
+            <div className="flex justify-between items-center border-b border-white/10 pb-3">
+              <div>
+                <h3 className="font-bold text-white text-lg uppercase tracking-wide">Secure Checkout</h3>
+                <p className="text-[10px] text-slate-400 font-mono tracking-widest mt-0.5">ONLINE CHECKOUT SIMULATION</p>
+              </div>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white" onClick={() => setShowPayModal(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {payError && (
+              <div className="p-3 rounded bg-red-500/20 border border-red-500/50 text-red-400 text-xs">{payError}</div>
+            )}
+
+            {paySuccess ? (
+              <div className="p-6 flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-16 h-16 bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)] animate-bounce">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-emerald-400 uppercase tracking-wider">Payment Approved</h4>
+                  <p className="text-xs text-slate-400 mt-1 font-light">Your transaction completed successfully.</p>
+                </div>
+                <div className="bg-black/30 p-3 rounded-lg border border-white/5 font-mono text-xs w-full text-left space-y-1">
+                  <div className="flex justify-between"><span className="text-slate-500">Invoice:</span> <span className="text-slate-300 font-bold">{invoiceNumber}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Amount Paid:</span> <span className="text-emerald-400 font-bold">{formatCurrency(remaining)}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Method:</span> <span className="text-slate-300">Credit Card (Simulated)</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Ref Code:</span> <span className="text-primary font-bold">SIM-PAY-{Math.random().toString(36).substr(2, 9).toUpperCase()}</span></div>
+                </div>
+                <Button className="w-full font-bold uppercase tracking-wider" onClick={() => setShowPayModal(false)}>
+                  Close
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handlePayInvoice} className="space-y-4">
+                <div className="bg-black/30 p-4 rounded-xl border border-white/5 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest block">Total Due</span>
+                    <span className="font-mono font-bold text-lg text-primary">{invoiceNumber}</span>
+                  </div>
+                  <span className="font-mono font-bold text-2xl text-emerald-400">{formatCurrency(remaining)}</span>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cardHolder" className="text-slate-300 font-semibold text-xs">Cardholder Name</Label>
+                  <Input
+                    id="cardHolder"
+                    placeholder="e.g. John Doe"
+                    required
+                    value={cardForm.name}
+                    onChange={e => setCardForm(prev => ({ ...prev, name: e.target.value }))}
+                    className="bg-black/20 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cardNumber" className="text-slate-300 font-semibold text-xs">Card Number</Label>
+                  <Input
+                    id="cardNumber"
+                    placeholder="•••• •••• •••• ••••"
+                    required
+                    maxLength={16}
+                    value={cardForm.card_number}
+                    onChange={e => setCardForm(prev => ({ ...prev, card_number: e.target.value.replace(/\D/g, "") }))}
+                    className="bg-black/20 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-primary font-mono"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="expiry" className="text-slate-300 font-semibold text-xs">Expiration Date</Label>
+                    <Input
+                      id="expiry"
+                      placeholder="MM/YY"
+                      required
+                      maxLength={5}
+                      value={cardForm.expiry}
+                      onChange={e => {
+                        let val = e.target.value.replace(/\D/g, "")
+                        if (val.length > 2) val = val.substring(0, 2) + "/" + val.substring(2, 4)
+                        setCardForm(prev => ({ ...prev, expiry: val }))
+                      }}
+                      className="bg-black/20 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-primary font-mono"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cvv" className="text-slate-300 font-semibold text-xs">CVV</Label>
+                    <Input
+                      id="cvv"
+                      placeholder="•••"
+                      type="password"
+                      required
+                      maxLength={3}
+                      value={cardForm.cvv}
+                      onChange={e => setCardForm(prev => ({ ...prev, cvv: e.target.value.replace(/\D/g, "") }))}
+                      className="bg-black/20 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-primary font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4 border-t border-white/10">
+                  <Button type="button" variant="outline" className="flex-1 glass text-slate-300 font-semibold" onClick={() => setShowPayModal(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={payLoading} className="flex-1 font-bold tracking-wider uppercase bg-primary text-black hover:bg-primary/95 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+                    {payLoading ? <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> : null}
+                    {payLoading ? "Processing..." : "Complete Payment"}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
