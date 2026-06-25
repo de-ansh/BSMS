@@ -8,21 +8,21 @@ Use this document to track, design, and implement new features for the Building/
 A system for residents to report issues and for admins to assign maintenance staff and track resolution.
 
 ### Backend Requirements
-- [ ] Create `Complaint` model (`id`, `title`, `description`, `category`, `status`, `resident_id`, `assigned_staff_id`, `created_at`, `updated_at`).
-- [ ] Implement API routes:
-  - [ ] `POST /complaints` (Resident: raise complaint).
-  - [ ] `GET /complaints` (Resident: view their own; Admin: view all for building).
-  - [ ] `PATCH /complaints/{id}` (Admin: assign staff, update status, add comments).
-- [ ] Write integration and unit tests for routes.
+- [x] Create `Complaint` model (`id`, `title`, `description`, `category`, `status`, `resident_id`, `assigned_staff_id`, `created_at`, `updated_at`).
+- [x] Implement API routes:
+  - [x] `POST /complaints` (Resident: raise complaint).
+  - [x] `GET /complaints` (Resident: view their own; Admin: view all for building).
+  - [x] `PATCH /complaints/{id}` (Admin: assign staff, update status, add comments).
+- [x] Write integration and unit tests for routes.
 
 ### Frontend Requirements
-- [ ] Build **Resident Ticket Portal**:
-  - [ ] Ticket submission form (Category, Title, Details).
-  - [ ] My Complaints list view with color-coded status badges (Pending, In Progress, Resolved).
-- [ ] Build **Admin Control Center**:
-  - [ ] Global complaints ledger.
-  - [ ] Ticket detail page with Staff Assignment dropdown and comments thread.
-- [ ] Add sidebar link and routing.
+- [x] Build **Resident Ticket Portal**:
+  - [x] Ticket submission form (Category, Title, Details).
+  - [x] My Complaints list view with color-coded status badges (Pending, In Progress, Resolved).
+- [x] Build **Admin Control Center**:
+  - [x] Global complaints ledger.
+  - [x] Ticket detail page with Staff Assignment dropdown and comments thread.
+- [x] Add sidebar link and routing.
 
 ---
 
@@ -30,22 +30,22 @@ A system for residents to report issues and for admins to assign maintenance sta
 Prevent scheduling conflicts for shared spaces (Clubhouse, Party Hall, Swimming Pool, Tennis Court).
 
 ### Backend Requirements
-- [ ] Create `Amenity` model (`id`, `name`, `description`, `rules`, `booking_required`).
-- [ ] Create `Booking` model (`id`, `amenity_id`, `resident_id`, `start_time`, `end_time`, `status`, `approved_by`).
-- [ ] Implement API routes:
-  - [ ] `GET /amenities` (List all available shared spaces).
-  - [ ] `POST /bookings` (Request slot, with checks to prevent double-booking).
-  - [ ] `GET /bookings` (List resident/admin bookings).
-  - [ ] `PATCH /bookings/{id}` (Admin: Approve/Reject/Cancel booking).
+- [x] Create `Amenity` model (`id`, `name`, `description`, `rules`, `booking_required`).
+- [x] Create `Booking` model (`id`, `amenity_id`, `resident_id`, `start_time`, `end_time`, `status`, `approved_by`).
+- [x] Implement API routes:
+  - [x] `GET /amenities` (List all available shared spaces).
+  - [x] `POST /bookings` (Request slot, with checks to prevent double-booking).
+  - [x] `GET /bookings` (List resident/admin bookings).
+  - [x] `PATCH /bookings/{id}` (Admin: Approve/Reject/Cancel booking).
 
 ### Frontend Requirements
-- [ ] Build **Amenity List View**:
-  - [ ] Cards detailing amenities.
-- [ ] Build **Interactive Booking Calendar/Form**:
-  - [ ] Time slot selector.
-  - [ ] Visual overlap warnings.
-- [ ] Build **Admin Approvals Panel**:
-  - [ ] Pending requests list.
+- [x] Build **Amenity List View**:
+  - [x] Cards detailing amenities.
+- [x] Build **Interactive Booking Calendar/Form**:
+  - [x] Time slot selector.
+  - [x] Visual overlap warnings.
+- [x] Build **Admin Approvals Panel**:
+  - [x] Pending requests list.
 
 ---
 
@@ -67,14 +67,14 @@ Security verification and structured parking allocation.
 Automate ledger invoice generation and simulate online payment processor checkout.
 
 ### Backend Requirements
-- [ ] Create an Admin endpoint `POST /billing/auto-generate` to bulk generate monthly maintenance invoices for all units in the building.
-- [ ] Create payment integration simulation endpoint `POST /billing/pay` to mark invoices paid and record transactions.
+- [x] Create an Admin endpoint `POST /billing/auto-generate` to bulk generate monthly maintenance invoices for all units in the building.
+- [x] Create payment integration simulation endpoint `POST /billing/pay` to mark invoices paid and record transactions.
 
 ### Frontend Requirements
-- [ ] Add bulk auto-generation controls in Admin's Billing Dashboard.
-- [ ] Create a **Resident Billing Ledger**:
-  - [ ] Resident can view all invoices.
-  - [ ] "Pay Now" checkout simulator with modal credit card inputs, leading to success screen and real-time status update.
+- [x] Add bulk auto-generation controls in Admin's Billing Dashboard.
+- [x] Create a **Resident Billing Ledger**:
+  - [x] Resident can view all invoices.
+  - [x] "Pay Now" checkout simulator with modal credit card inputs, leading to success screen and real-time status update.
 
 ---
 

@@ -183,7 +183,7 @@ const MemberForm = () => {
                 <Checkbox
                   id="isOwner"
                   checked={isOwner}
-                  onCheckedChange={(checked) => setIsOwner(checked === true)}
+                  onCheckedChange={(checked: boolean) => setIsOwner(checked === true)}
                   disabled={submitting}
                 />
                 <Label htmlFor="isOwner" className="cursor-pointer">

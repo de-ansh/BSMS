@@ -171,7 +171,7 @@ const AmenityDashboard = () => {
             </p>
           </div>
           {userRole === "admin" && (
-            <Button 
+            <Button
               className="gap-2 font-bold tracking-widest uppercase bg-primary text-black hover:bg-primary/90 border border-primary shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all"
               onClick={() => setShowAddModal(true)}
             >
@@ -224,7 +224,7 @@ const AmenityDashboard = () => {
                       </div>
 
                       {userRole === "resident" && amenity.booking_required && (
-                        <Button 
+                        <Button
                           className="w-full mt-6 bg-primary text-black hover:bg-primary/95 font-bold uppercase tracking-widest text-xs h-9"
                           onClick={() => {
                             setSelectedAmenity(amenity)
@@ -278,15 +278,15 @@ const AmenityDashboard = () => {
                               </div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 className="flex-1 sm:flex-none bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 hover:bg-emerald-500/30 text-xs font-bold uppercase tracking-wider gap-1 h-8"
                                 onClick={() => handleStatusUpdate(booking.id, "approved")}
                               >
                                 <Check className="w-4 h-4" /> Approve
                               </Button>
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 className="flex-1 sm:flex-none bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30 text-xs font-bold uppercase tracking-wider gap-1 h-8"
                                 onClick={() => handleStatusUpdate(booking.id, "rejected")}
                               >
@@ -326,9 +326,9 @@ const AmenityDashboard = () => {
                               <td className="p-4">{getStatusBadge(booking.status)}</td>
                               <td className="p-4 text-right">
                                 {booking.status === "approved" && (
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
                                     className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs font-bold uppercase tracking-wider h-8"
                                     onClick={() => handleStatusUpdate(booking.id, "cancelled")}
                                   >
@@ -364,8 +364,8 @@ const AmenityDashboard = () => {
                       </div>
 
                       {(booking.status === "pending" || booking.status === "approved") && (
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           className="w-full sm:w-auto bg-red-500/5 hover:bg-red-500/10 border-red-500/30 text-red-400 hover:text-red-300 text-xs font-bold uppercase tracking-widest h-8"
                           onClick={() => handleStatusUpdate(booking.id, "cancelled")}
@@ -399,11 +399,11 @@ const AmenityDashboard = () => {
               <form onSubmit={handleAddAmenity} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Facility Name</Label>
-                  <Input 
-                    id="name" 
-                    required 
-                    placeholder="e.g. Clubhouse, Tennis Court" 
-                    value={amenityForm.name} 
+                  <Input
+                    id="name"
+                    required
+                    placeholder="e.g. Clubhouse, Tennis Court"
+                    value={amenityForm.name}
                     onChange={e => setAmenityForm(prev => ({ ...prev, name: e.target.value }))}
                     className="bg-black/20 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary focus-visible:border-primary"
                   />
@@ -411,10 +411,10 @@ const AmenityDashboard = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="description">Description (Optional)</Label>
-                  <Textarea 
-                    id="description" 
-                    placeholder="Provide details about the space, amenities inside, capacity, etc." 
-                    value={amenityForm.description} 
+                  <Textarea
+                    id="description"
+                    placeholder="Provide details about the space, amenities inside, capacity, etc."
+                    value={amenityForm.description}
                     onChange={e => setAmenityForm(prev => ({ ...prev, description: e.target.value }))}
                     className="bg-black/20 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary focus-visible:border-primary"
                   />
@@ -422,19 +422,19 @@ const AmenityDashboard = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="rules">Rules / Policy Guidelines (Optional)</Label>
-                  <Input 
-                    id="rules" 
-                    placeholder="e.g. Operating Hours: 6AM-9PM, Max 2 Hours Booking Limit" 
-                    value={amenityForm.rules} 
+                  <Input
+                    id="rules"
+                    placeholder="e.g. Operating Hours: 6AM-9PM, Max 2 Hours Booking Limit"
+                    value={amenityForm.rules}
                     onChange={e => setAmenityForm(prev => ({ ...prev, rules: e.target.value }))}
                     className="bg-black/20 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary focus-visible:border-primary"
                   />
                 </div>
 
                 <div className="flex items-center gap-2 pt-2">
-                  <Checkbox 
-                    id="booking_required" 
-                    checked={amenityForm.booking_required} 
+                  <Checkbox
+                    id="booking_required"
+                    checked={amenityForm.booking_required}
                     onCheckedChange={val => setAmenityForm(prev => ({ ...prev, booking_required: !!val }))}
                     className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:text-black"
                   />
@@ -482,11 +482,11 @@ const AmenityDashboard = () => {
               <form onSubmit={handleCreateBooking} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="start_time">Start Date & Time</Label>
-                  <Input 
-                    id="start_time" 
-                    type="datetime-local" 
-                    required 
-                    value={bookingForm.start_time} 
+                  <Input
+                    id="start_time"
+                    type="datetime-local"
+                    required
+                    value={bookingForm.start_time}
                     onChange={e => setBookingForm(prev => ({ ...prev, start_time: e.target.value }))}
                     className="bg-black/20 border-white/10 text-white focus-visible:ring-primary [color-scheme:dark]"
                   />
@@ -494,11 +494,11 @@ const AmenityDashboard = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="end_time">End Date & Time</Label>
-                  <Input 
-                    id="end_time" 
-                    type="datetime-local" 
-                    required 
-                    value={bookingForm.end_time} 
+                  <Input
+                    id="end_time"
+                    type="datetime-local"
+                    required
+                    value={bookingForm.end_time}
                     onChange={e => setBookingForm(prev => ({ ...prev, end_time: e.target.value }))}
                     className="bg-black/20 border-white/10 text-white focus-visible:ring-primary [color-scheme:dark]"
                   />

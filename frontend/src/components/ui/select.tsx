@@ -9,6 +9,7 @@ interface SelectContextValue {
   setOpen: (open: boolean) => void
   labelMap: Record<string, string>
   registerLabel: (value: string, label: string) => void
+  disabled?: boolean
 }
 
 const SelectContext = createContext<SelectContextValue | null>(null)
@@ -24,9 +25,10 @@ interface SelectProps {
   defaultValue?: string
   onValueChange?: (value: string) => void
   children: React.ReactNode
+  disabled?: boolean
 }
 
-const Select = ({ value, defaultValue, onValueChange, children }: SelectProps) => {
+const Select = ({ value, defaultValue, onValueChange, children, disabled }: SelectProps) => {
   const [internalValue, setInternalValue] = useState(defaultValue || "")
   const [open, setOpen] = useState(false)
   const [labelMap, setLabelMap] = useState<Record<string, string>>({})
@@ -56,24 +58,26 @@ const Select = ({ value, defaultValue, onValueChange, children }: SelectProps) =
   }, [open])
 
   return (
-    <SelectContext.Provider value={{ value: currentValue, onValueChange: handleValueChange, open, setOpen, labelMap, registerLabel }}>
+    <SelectContext.Provider value={{ value: currentValue, onValueChange: handleValueChange, open, setOpen, labelMap, registerLabel, disabled }}>
       <div className="relative" ref={ref}>{children}</div>
     </SelectContext.Provider>
   )
 }
 
 const SelectTrigger = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
-  ({ className, children, ...props }, ref) => {
-    const { setOpen, open } = useSelectContext()
+  ({ className, children, disabled: triggerDisabled, ...props }, ref) => {
+    const { setOpen, open, disabled: contextDisabled } = useSelectContext()
+    const isDisabled = triggerDisabled || contextDisabled
     return (
       <button
         ref={ref}
         type="button"
+        disabled={isDisabled}
         className={cn(
           "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
-        onClick={() => setOpen(!open)}
+        onClick={() => !isDisabled && setOpen(!open)}
         {...props}
       >
         {children}
