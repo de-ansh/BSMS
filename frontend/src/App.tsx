@@ -26,6 +26,7 @@ import ComplaintForm from "@/components/helpdesk/ComplaintForm"
 import ComplaintDetail from "@/components/helpdesk/ComplaintDetail"
 import AmenityDashboard from "@/components/amenities/AmenityDashboard"
 import ParkingVehicleManagement from "@/components/parking/ParkingVehicleManagement"
+import Community from "@/components/community/Community"
 
 const App = () => {
   return (
@@ -62,6 +63,7 @@ const App = () => {
           <Route path="/helpdesk/:id" element={<ComplaintDetail />} />
           <Route path="/amenities" element={<AmenityDashboard />} />
           <Route path="/parking" element={<ParkingVehicleManagement />} />
+          <Route path="/community" element={<Community />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

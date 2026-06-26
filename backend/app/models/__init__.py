@@ -11,6 +11,8 @@ from app.models.complaint import Complaint, ComplaintComment
 from app.models.amenity import Amenity, Booking
 from app.models.vehicle import Vehicle
 from app.models.parking import ParkingSlot
+from app.models.forum import Post, ForumComment
+from app.models.poll import Poll, PollOption, Vote
 
 __all__ = [
     "Building",
@@ -29,4 +31,9 @@ __all__ = [
     "Booking",
     "Vehicle",
     "ParkingSlot",
+    "Post",
+    "ForumComment",
+    "Poll",
+    "PollOption",
+    "Vote",
 ]

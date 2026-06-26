@@ -2,9 +2,10 @@ import { APIRequestContext, expect } from '@playwright/test';
 
 export async function createAdminAndGetCredentials(request: APIRequestContext) {
   const time = Date.now();
-  const buildingName = `Bldg ${time}`;
-  const buildingCode = `bldg-${time}`;
-  const adminEmail = `admin-${time}@test.com`;
+  const rand = Math.floor(Math.random() * 1000000);
+  const buildingName = `Bldg ${time} ${rand}`;
+  const buildingCode = `bldg-${time}-${rand}`;
+  const adminEmail = `admin-${time}-${rand}@test.com`;
   const adminPassword = `password-${time}`;
 
   // 1. Login as Super Admin to get token
@@ -71,7 +72,8 @@ export async function createAdminUnitAndMember(request: APIRequestContext) {
   const { access_token: adminToken } = await adminLoginRes.json();
 
   const time = Date.now();
-  const unitNumber = `U-${Math.floor(Math.random() * 10000)}`;
+  const rand = Math.floor(Math.random() * 1000000);
+  const unitNumber = `U-${Math.floor(Math.random() * 10000)}-${rand}`;
 
   // 2. Create Unit
   const unitRes = await request.post('http://localhost:8000/units/', {
@@ -91,8 +93,8 @@ export async function createAdminUnitAndMember(request: APIRequestContext) {
   const { id: unitId } = await unitRes.json();
 
   // 3. Create Member
-  const memberEmail = `res-${time}@test.com`;
-  const memberName = `Resident ${time}`;
+  const memberEmail = `res-${time}-${rand}@test.com`;
+  const memberName = `Resident ${time} ${rand}`;
   const memberRes = await request.post('http://localhost:8000/members/', {
     headers: {
       'Authorization': `Bearer ${adminToken}`

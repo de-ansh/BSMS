@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import {
   BarChart, Building2, Users, CreditCard, Bell, Settings, HelpCircle,
-  Search, ChevronDown, LogOut, BadgeInfo, ShieldCheck, Menu, X, Moon, Sun, Calendar, Car
+  Search, ChevronDown, LogOut, BadgeInfo, ShieldCheck, Menu, X, Moon, Sun, Calendar, Car, MessageSquare
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,6 +23,7 @@ const navItems = [
   { icon: <HelpCircle />, label: "Helpdesk", path: "/helpdesk", adminOnly: false },
   { icon: <Calendar />, label: "Amenities", path: "/amenities", adminOnly: false },
   { icon: <Car />, label: "Vehicles & Parking", path: "/parking", adminOnly: false },
+  { icon: <MessageSquare />, label: "Community Hub", path: "/community", adminOnly: false },
   { icon: <ShieldCheck />, label: "Audit Log", path: "/audit-log", adminOnly: true },
 ]
 

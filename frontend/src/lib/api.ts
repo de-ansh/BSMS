@@ -342,4 +342,28 @@ export const api = {
         body: JSON.stringify({ status }),
       }),
   },
+
+  forum: {
+    list: () =>
+      request<Array<any>>("/forum"),
+    get: (id: string) =>
+      request<any>(`/forum/${id}`),
+    create: (data: { title: string; content: string }) =>
+      request<any>("/forum", { method: "POST", body: JSON.stringify(data) }),
+    delete: (id: string) =>
+      request<void>(`/forum/${id}`, { method: "DELETE" }),
+    comment: (id: string, content: string) =>
+      request<any>(`/forum/${id}/comments`, { method: "POST", body: JSON.stringify({ content }) }),
+  },
+
+  polls: {
+    list: () =>
+      request<Array<any>>("/polls"),
+    create: (data: { question: string; options: string[]; expires_at?: string }) =>
+      request<any>("/polls", { method: "POST", body: JSON.stringify(data) }),
+    vote: (pollId: string, optionId: string) =>
+      request<any>(`/polls/${pollId}/vote`, { method: "POST", body: JSON.stringify({ option_id: optionId }) }),
+    close: (pollId: string) =>
+      request<any>(`/polls/${pollId}/close`, { method: "PATCH" }),
+  },
 }

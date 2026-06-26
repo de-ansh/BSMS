@@ -20,6 +20,8 @@ from app.routers import (
     amenities,
     vehicles,
     parking,
+    forum,
+    polls,
 )
 # (rest of file...)
 @asynccontextmanager
@@ -57,3 +59,5 @@ app.include_router(complaints.router)
 app.include_router(amenities.router)
 app.include_router(vehicles.router)
 app.include_router(parking.router)
+app.include_router(forum.router)
+app.include_router(polls.router)
