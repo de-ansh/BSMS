@@ -82,9 +82,9 @@ Automate ledger invoice generation and simulate online payment processor checkou
 Interactive communication tools for residents.
 
 ### Backend Requirements
-- [ ] Create models for `Post`, `Comment`, `Poll`, and `Vote`.
-- [ ] Implement CRUD routes with role checks.
+- [x] Create models for `Post`, `Comment`, `Poll`, and `Vote`.
+- [x] Implement CRUD routes with role checks.
 
 ### Frontend Requirements
-- [ ] Build **Community Forum** feed.
-- [ ] Build **Active Polls** card in Resident/Admin dashboards.
+- [x] Build **Community Forum** feed.
+- [x] Build **Active Polls** card in Resident/Admin dashboards.
